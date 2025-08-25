@@ -20,6 +20,8 @@ from typing import Union, Optional, Tuple
 
 import torch
 import torch._dynamo
+import sys
+
 from megatron.core import mpu
 
 from megatron.core import parallel_state
@@ -88,9 +90,9 @@ def model_provider(
     
     print_rank_0("building Qwen2-VL model in TE...")
     # Layer Specs of vit, llm and projector
-    transformer_layer_spec = get_gpt_layer_with_transformer_engine_spec(args.qk_layernorm)
+    transformer_layer_spec = get_gpt_layer_with_transformer_engine_spec(args.qk_layernorm, num_experts=config.num_moe_experts, moe_grouped_gemm=args.moe_grouped_gemm)
     vision_model_spec = get_qwen2vl_vision_model_spec()
-    vision_projector_spec = get_mlp_module_spec(add_norm=False).submodules
+    vision_projector_spec = get_mlp_module_spec(num_experts=None, add_norm=False).submodules
 
     model = Qwen2VLModel(
         language_transformer_config=config,
@@ -303,7 +305,6 @@ def get_ltor_masks_and_position_ids(
     loss_mask[target == pad_token] = 0.0  # mask paddings
     if ignore_index is not None:
         loss_mask[target == ignore_index] = 0.0  # mask prompts
-
     # Attention mask.
     attention_mask = None
 
@@ -379,7 +380,6 @@ def loss_func(loss_mask: torch.Tensor, output_tensor: torch.Tensor):
         output_tensor (torch.Tensor): The tensor with the losses
     """
     args = get_args()
-
     losses = output_tensor.float()
     loss_mask = loss_mask.view(-1).float()
 
@@ -394,10 +394,14 @@ def loss_func(loss_mask: torch.Tensor, output_tensor: torch.Tensor):
             f"Rank {global_rank}: found NaN in local forward loss calculation. "
             f"Device: {torch.cuda.current_device()}, node: {os.uname()[1]}"
         )
-
     averaged_loss = average_losses_across_data_parallel_group(loss)
+    # import torch.distributed as dist
+    # if dist.get_rank() == 0:
+    #     print("averaged loss:", averaged_loss.tolist())
     averaged_loss = averaged_loss[0] / averaged_loss[1]
-
+    # if dist.get_rank() == 0:
+    #     print("loss:", loss.tolist())
+    
     return loss[0] / loss[1] * args.context_parallel_size, {"lm loss": averaged_loss}
 
 def forward_step(data_iterator, model: Qwen2VLModel):
@@ -424,10 +428,8 @@ def forward_step(data_iterator, model: Qwen2VLModel):
         video_input_mask
     ) = get_batch(data_iterator)
     timers("batch-generator").stop()
-
     vision_data = torch.cat([imgs, videos], dim=0)
     vision_grid = torch.cat([image_thw_grids, video_thw_grids], dim=0)
-
     output_tensor = model(
         input_ids = tokens,
         position_ids = position_ids,
@@ -569,6 +571,8 @@ def cyclic_iter(iter):
 
 if __name__ == "__main__":
     train_valid_test_dataloaders_provider.is_distributed = True
+    import torch.distributed as dist
+    import swanlab
 
     pretrain(
         train_valid_test_dataloaders_provider,

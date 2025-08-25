@@ -212,7 +212,6 @@ class Qwen2VisionModel(VisionModule):
 
         if not self.post_process:
             return hidden_states
-        
         return self.projection(hidden_states.view(-1, self.merge_hidden_size))
 
     def build_packed_seq_params(self, grid_thw: torch.Tensor) -> PackedSeqParams:

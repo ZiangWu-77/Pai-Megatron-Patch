@@ -31,6 +31,7 @@ from megatron.training.checkpointing import get_checkpoint_name, get_checkpoint_
 from functools import partial
 from megatron.training.utils import get_ltor_masks_and_position_ids
 import sys
+import math
 
 path_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__)))))
 sys.path.append(os.path.join(path_dir, "examples"))
@@ -76,7 +77,11 @@ def add_model_args(parser):
         type=int,
         default=None
     )
-
+    parser.add_argument(
+        "--target-expert-model-parallel-size",
+        type=int,
+        default=None
+    )
     parser.add_argument(
         "--hf-ckpt-path",
         type=str
@@ -88,7 +93,7 @@ def add_model_args(parser):
     )
 
     return parser
-
+# TODO: Add MoE Support Maybe done. need test
 def load_megatron_model(args):
     """load a TPxPPx checkpoint into a TP1PP1 model."""
     os.makedirs(args.save, exist_ok=True)
@@ -96,6 +101,7 @@ def load_megatron_model(args):
     model = model_provider()
     args.tensor_model_parallel_size = args.target_tensor_model_parallel_size
     args.pipeline_model_parallel_size = args.target_pipeline_model_parallel_size
+    args.expert_model_parallel_size = args.target_expert_model_parallel_size
     if args.target_num_layers_per_virtual_pipeline_stage is not None:
         args.num_layers_per_virtual_pipeline_stage = args.target_num_layers_per_virtual_pipeline_stage
         num_layers_per_pipeline_stage = args.num_layers // args.pipeline_model_parallel_size
@@ -112,7 +118,18 @@ def load_megatron_model(args):
     vision_state_dicts = defaultdict(dict)
     state_dict = {}
     mid_state = defaultdict(list)
-    if (
+    if args.expert_model_parallel_size > 1:
+        pattern = r'local_experts\.(\d+)'
+        num_local_experts = args.num_experts // args.expert_model_parallel_size
+        for ep_rank in range(args.expert_model_parallel_size):
+            checkpoint_name = get_checkpoint_name(model_path, iteration, release, False, 0, 0, True, ep_rank)
+            split_state = torch.load(checkpoint_name, map_location='cpu', weights_only=False)['model']
+            for k, v in split_state.items():
+                if 'local_experts' in k:
+                    local_expert_rank = int(re.findall(pattern, k)[0])
+                    expert_rank = local_expert_rank + num_local_experts * ep_rank
+                    k = k.replace(f'local_experts.{local_expert_rank}', f'local_experts.{expert_rank}')
+    elif (
         args.tensor_model_parallel_size == 1
         and args.pipeline_model_parallel_size == 1
     ):
@@ -215,7 +232,7 @@ def load_megatron_model(args):
 """
     The following two functions convert a TP1PP1 MG/HF model to HF/MG format.
 """
-
+# TODO:add moe convert
 @torch.inference_mode()
 def convert_checkpoint_from_megatron_to_transformers(mgmodel, hfmodel, args):
     if args.fp16:
@@ -323,6 +340,7 @@ def convert_checkpoint_from_megatron_to_transformers(mgmodel, hfmodel, args):
     n_params = sum([t.numel() for k, t in hfllm.state_dict().items() if isinstance(t, torch.Tensor) and 'extra_state' not in k])
     assert n_params == copied_numel
 
+# Done with MoE Lyaer. Numel check pass.
 @torch.inference_mode()
 def convert_checkpoint_from_transformers_to_megatron(hfmodel, mgmodel, args):
     if args.fp16:
@@ -417,12 +435,23 @@ def convert_checkpoint_from_transformers_to_megatron(hfmodel, mgmodel, args):
         copied_numel += safe_copy(qkv_bias, mglayer.self_attention.linear_qkv.bias)
         copied_numel += safe_copy(hflayer.self_attn.o_proj.weight, mglayer.self_attention.linear_proj.weight)
 
+        # fc1_weight = torch.cat([hflayer.mlp.gate_proj.weight, hflayer.mlp.up_proj.weight])
+        # copied_numel += safe_copy(fc1_weight, mglayer.mlp.linear_fc1.weight)
+        
+        # copied_numel += safe_copy(hflayer.mlp.down_proj.weight, mglayer.mlp.linear_fc2.weight)
+        # copied_numel += safe_copy(hflayer.post_attention_layernorm.weight, mglayer.mlp.linear_fc1.layer_norm_weight)
+        # moe weight copy
+        mglayer.mlp.router.weight.data.normal_(mean=0.0, std=0.02)
+        # copied_numel += mglayer.mlp.router.weight.numel()
         fc1_weight = torch.cat([hflayer.mlp.gate_proj.weight, hflayer.mlp.up_proj.weight])
-        copied_numel += safe_copy(fc1_weight, mglayer.mlp.linear_fc1.weight)
-
-        copied_numel += safe_copy(hflayer.mlp.down_proj.weight, mglayer.mlp.linear_fc2.weight)
-        copied_numel += safe_copy(hflayer.post_attention_layernorm.weight, mglayer.mlp.linear_fc1.layer_norm_weight)
-
+        fc2_weight = hflayer.mlp.down_proj.weight
+        experts_numel = 0
+        for i, mg_experts in enumerate(mglayer.mlp.experts.local_experts):
+            experts_numel += safe_copy(fc1_weight, mg_experts.linear_fc1.weight)
+            experts_numel += safe_copy(fc2_weight, mg_experts.linear_fc2.weight)
+        copied_numel += experts_numel // args.num_experts
+        copied_numel += safe_copy(hflayer.post_attention_layernorm.weight, mglayer.pre_mlp_layernorm.weight)
+    
     copied_numel += safe_copy(hfllm.norm.weight, mgllm.decoder.final_layernorm.weight)
     if args.untie_embeddings_and_output_weights:
         safe_copy(hfmodel.lm_head.weight, mgllm.output_layer.weight)
@@ -557,9 +586,64 @@ def load_split_state_dict_to_vision_model(state_dicts, mgvision, args):
 
     mgvision.load_state_dict(merged_dict, strict=False)
 
+
+def generate_rank_group(
+        tensor_model_parallel_size: int=1,
+        expert_tensor_parallel_size: int=1,
+        expert_model_parallel_size: int=1,
+        pipeline_model_parallel_size: int=1
+):
+    """
+        copy from toolkits/model_checkpoints_convertor/deepseek/hf2mcore_deepseek_v3_moe.py
+
+        This function attempts to generate group rank on the minimal practicable world_size.
+        Support Decoder-Only model currently.
+    """
+    tp, etp, ep, pp = (
+        tensor_model_parallel_size,
+        expert_tensor_parallel_size,
+        expert_model_parallel_size,
+        pipeline_model_parallel_size
+    )
+    minimal_worldsize = pp * math.lcm(tp, etp * ep)
+    print(f"The given parallel config should be run on at least {minimal_worldsize} cards")
+    dp = minimal_worldsize // (pp * tp)
+    edp = minimal_worldsize // (pp * ep * etp)
+    # NOTE: If user want to scale up cp_size, he should downscale
+    # dp_size or scale up world_size, i.e., edp_size
+    cp = 1
+
+    # TODO: support other orders
+    order = "tp-cp-ep-dp-pp"
+    # In training:
+    # Dense:
+    # global_rank = tp_rank + cp_rank * tp_size + dp_rank * cp_size * tp_size + pp_rank * dp_size * cp_size * tp_size
+    # MoE:
+    # global_rank = etp_rank + ep_rank * etp_size + edp_rank * ep_size * etp_size + pp_rank * edp_size * ep_size * etp_size
+
+    # In ckpt loading, each rank will load a checkpoint according to its (tp_rank, pp_rank, ep_rank)
+    # Thus, (tp_rank, ep_rank) should map to a unique etp_rank
+    rank_mappings = dict()
+    local_ids = []
+    for global_rank in range(minimal_worldsize):
+        tp_rank = global_rank % tp
+        etp_rank = global_rank % etp
+        ep_rank = (global_rank // etp) % ep
+        pp_rank = global_rank // (dp * tp)
+
+        if (tp_rank, ep_rank) not in rank_mappings:
+            rank_mappings[(tp_rank, ep_rank)] = etp_rank
+
+        if rank_mappings[(tp_rank, ep_rank)] != etp_rank:
+            raise ValueError("The legacy checkpoint format cannot support this parallel config.")
+
+        local_ids.append((tp_rank, etp_rank, ep_rank, pp_rank))
+    return local_ids
+# MoE fix now. Only support ep now.
 def save_mgmodel(mgmodel, args):
     args.tensor_model_parallel_size = args.target_tensor_model_parallel_size
     args.pipeline_model_parallel_size = args.target_pipeline_model_parallel_size
+    args.expert_model_parallel_size = args.target_expert_model_parallel_size
     vpp_size = 1 # NOTE: vpp_size=1 if vpp is not used
     if args.target_num_layers_per_virtual_pipeline_stage is not None:
         args.num_layers_per_virtual_pipeline_stage = args.target_num_layers_per_virtual_pipeline_stage
@@ -586,8 +670,35 @@ def save_mgmodel(mgmodel, args):
             full_model[k] = None
         elif full_model[k] is None:
             full_model.pop(k)
-
-    if (
+    
+    # only support expert parallel lonely, TODO:tp+pp+ep
+    expert_pattern = r"local_experts\.(\d+)"
+    if args.expert_model_parallel_size > 1:
+        assert args.num_experts > 1, "num_experts should be given."
+        assert args.num_experts % args.expert_model_parallel_size == 0
+        num_local_experts = args.num_experts // args.expert_model_parallel_size
+        for (tp_rank, etp_rank, ep_rank, pp_rank) in generate_rank_group(
+                expert_model_parallel_size=args.expert_model_parallel_size
+        ):
+            model_split = {}
+            checkpoint_name = get_checkpoint_name(
+                args.save, 0, True,
+                args.pipeline_model_parallel_size > 1,
+                tp_rank,
+                pp_rank,
+                args.expert_model_parallel_size > 1,
+                ep_rank
+            )
+            for k, v in full_model.items():
+                if 'local_experts' in k:
+                    expert_rank = int(re.findall(expert_pattern, k)[0])
+                    if expert_rank // num_local_experts != ep_rank:
+                        continue
+                    expert_local_rank = expert_rank % num_local_experts
+                    k = k.replace(f'local_experts.{expert_rank}', f'local_experts.{expert_local_rank}')
+                model_split[k] = v
+            save_state_dict(args, [model_split], checkpoint_name)
+    elif (
         args.tensor_model_parallel_size == 1
         and args.pipeline_model_parallel_size == 1
     ):
@@ -711,7 +822,7 @@ def add_extra_args(parser):
 def main():
     initialize_megatron(extra_args_provider=add_extra_args)
     args = get_args()
-
+    
     if args.convert_checkpoint_from_megatron_to_transformers:
         config = AutoConfig.from_pretrained(args.hf_ckpt_path)
         hf_model = Qwen2VLForConditionalGeneration.from_pretrained(args.hf_ckpt_path, torch_dtype=config.torch_dtype)

@@ -4,6 +4,7 @@ import logging
 from typing import Dict, Literal, Optional, Tuple, Union, List
 
 import torch
+import torch.nn as nn
 from torch import Tensor
 
 from megatron.core import InferenceParams, tensor_parallel
@@ -82,6 +83,7 @@ class GPTModel(LanguageModule):
                 max_sequence_length=self.max_sequence_length,
                 position_embedding_type=position_embedding_type,
             )
+            # self.embedding = nn.Embedding(self.vocab_size, self.config.hidden_size, self.padding_idx)
 
         if self.position_embedding_type == 'rope':
             self.rotary_pos_emb = Qwen2VLRotaryEmbedding(
@@ -93,7 +95,7 @@ class GPTModel(LanguageModule):
             )
             assert mrope_section is not None, "mrope section should be provided for Qwen2VLRoPE!"
             self.mrope_section = mrope_section
-
+        
         # Transformer.
         self.decoder = TransformerBlock(
             config=self.config,
@@ -187,6 +189,7 @@ class GPTModel(LanguageModule):
             rotary_pos_emb = self.rotary_pos_emb(position_ids, self.mrope_section)
 
         # Run decoder.
+        
         hidden_states = self.decoder(
             hidden_states=decoder_input,
             attention_mask=attention_mask,
@@ -195,7 +198,6 @@ class GPTModel(LanguageModule):
             packed_seq_params=packed_seq_params,
             **(extra_block_kwargs or {}),
         )
-
         if not self.post_process:
             return hidden_states
 

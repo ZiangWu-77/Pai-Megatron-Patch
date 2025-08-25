@@ -1,13 +1,19 @@
 #!/bin/bash
 set -e
-ENV=$1
+ENV="dsw"
 CURRENT_DIR="$( cd "$( dirname "$0" )" && pwd )"
 MEGATRON_PATCH_PATH=$( dirname $( dirname ${CURRENT_DIR}))
+# export NVTE_DEBUG=1 
+# export NVTE_DEBUG_LEVEL=2
 export PYTHONPATH=${MEGATRON_PATCH_PATH}:${MEGATRON_PATCH_PATH}/backends/megatron/Megatron-LM-250217:$PYTHONPATH
 export CUDA_DEVICE_MAX_CONNECTIONS=1
 export NVTE_APPLY_QK_LAYER_SCALING=0
-export NVTE_ALLOW_NONDETERMINISTIC_ALGO=1
+# export NVTE_ALLOW_NONDETERMINISTIC_ALGO=0
+export NVTE_FLASH_ATTN=0
+export NVTE_FUSED_ATTN=1
 export TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD=true # for PyTorch >= 2.6
+export UB_SKIPMC=1 # cancel CUDA multicast
+# export CUDA_VISIBLE_DEVICES=1
 
 if [ -z ${MP_AC_LAYERS} ];then
     MP_AC_LAYERS=1
@@ -33,42 +39,42 @@ else
 fi
 
 MP_SFT_PACKING=false
-
+# GPUS_PER_NODE=1
 DISTRIBUTED_ARGS="--nproc_per_node $GPUS_PER_NODE --nnodes $NNODES --node_rank $NODE_RANK --master_addr $MASTER_ADDR --master_port $MASTER_PORT"
 
 ### BASE CONFIG ###
-MODEL_SIZE=$2
-BATCH_SIZE=$3
-GLOBAL_BATCH_SIZE=$4
-LR=$5
-MIN_LR=$6
-SEQ_LEN=$7
-PAD_LEN=$8
-PR=$9
+MODEL_SIZE="2B"
+BATCH_SIZE=4
+GLOBAL_BATCH_SIZE=128
+LR=5e-6
+MIN_LR=0
+SEQ_LEN=4096
+# PAD_LEN=4096
+PR=bf16
 ### BASE CONFIG ###
 
 ### PARALLEL / BOOL OPTION ###
-TP=${10}
-PP=${11}
-CP=${12}
-SP=${13}
-DO=${14}
-FL=${15}
+TP=1
+PP=1
+CP=1
+SP=true
+DO=true
+FL=true
 ### PARALLEL / BOOL OPTION ###
 
 ### OTHERS ###
-AC=${16}
-OPTIMIZER_OFFLOAD=${17}
-SAVE_INTERVAL=${18}
-DATASET_PATH=${19}
-VALID_DATASET_PATH=${20}
-PRETRAIN_CHECKPOINT_PATH=${21}
+AC=false
+OPTIMIZER_OFFLOAD=false
+SAVE_INTERVAL=10000
+DATASET_PATH="/home/ma-user/work/Dataset/Cambrian737k/Cambrian737k/wds-train"
+VALID_DATASET_PATH="/home/ma-user/work/Dataset/Cambrian737k/Cambrian737k/wds-train"
+PRETRAIN_CHECKPOINT_PATH="/home/ma-user/work/wza/Model/Qwen2-VL-2B-Instruct-4E-mcore"
 
-TRAIN_ITERS=${22}
-LR_WARMUP_ITERS=${23}
+TRAIN_ITERS=5439
+LR_WARMUP_ITERS=272
 ###############################
 
-OUTPUT_BASEPATH=${24}
+OUTPUT_BASEPATH=/cache/wza/Model/output_mcore_qwen2vl_4e2a_aux0_sft
 ### OTHERS ###
 if [ $FL = true ]; then
     export NVTE_FLASH_ATTN=1 NVTE_FUSED_ATTN=0
@@ -249,19 +255,29 @@ mkdir -p ${SAVED_PRETRAIN_CHECKPOINT_PATH}
 find -L ${PRETRAIN_CHECKPOINT_PATH} -maxdepth 1 -type f -name "*.json" -print0 | xargs -0 cp -t ${SAVED_PRETRAIN_CHECKPOINT_PATH}
 find -L ${PRETRAIN_CHECKPOINT_PATH} -maxdepth 1 -type f -name "merges.txt" -print0 | xargs -0 cp -t ${SAVED_PRETRAIN_CHECKPOINT_PATH}
 
+# weight decay 0.1 init 
+# --init-method-std 0.02 \　not allowed
+
+moe_options="\
+        --expert-model-parallel-size 4 \
+        --num-experts 4 \
+        --moe-router-topk 2 \
+        --moe-token-dispatcher-type alltoall \
+        --moe-router-load-balancing-type aux_loss \
+        --moe-aux-loss-coeff 0.001 \
+        "
 megatron_options="  \
         --train-data-path ${DATASET_PATH} \
         --valid-data-path ${VALID_DATASET_PATH} \
-        --split 100,0,0 \
+        --split 10,0,0 \
         --save ${SAVED_PRETRAIN_CHECKPOINT_PATH} \
         --lr ${LR} \
         --min-lr ${MIN_LR} \
         --lr-decay-style cosine \
-        --weight-decay 0.01 \
+        --weight-decay 0.1 \
         --adam-beta1 0.9 \
         --adam-beta2 0.95 \
         --clip-grad 1.0 \
-        --init-method-std 0.02 \
         --attention-dropout 0.0 \
         --hidden-dropout 0.0 \
         --lr-decay-iters ${LR_DECAY_ITERS} \
@@ -275,7 +291,6 @@ megatron_options="  \
         --ffn-hidden-size ${INTERMEDIATE_SIZE} \
         --seq-length ${SEQ_LEN} \
         --max-position-embeddings ${MAX_POSITION_EMBEDDINGS} \
-        --max-padding-length ${PAD_LEN} \
         --log-interval 1 \
         --log-throughput \
         --eval-interval 1000 \
@@ -285,6 +300,9 @@ megatron_options="  \
         --tensorboard-dir ${TENSORBOARD_DIR} \
         --log-timers-to-tensorboard \
         --log-validation-ppl-to-tensorboard \
+        --wandb-project qwen-megatron \
+        --wandb-exp-name ${NAME} \
+        --wandb-save-dir /cache/wza/Pai-Megatron-Patch/examples/qwen2_vl/swanlab \
         --tensor-model-parallel-size ${TP} \
         --pipeline-model-parallel-size ${PP} \
         --context-parallel-size ${CP} \
@@ -308,11 +326,28 @@ megatron_options="  \
         --dataloader-type external \
         --transformer-impl transformer_engine \
         --ckpt-format torch \
+        --freeze-ViT \
         "
-
+        # --no-persist-layer-norm
+                # --no-persist-layer-norm debugging fixed
+        # --transformer-impl transformer_engine \
+        # --max-padding-length ${PAD_LEN} 
+# moe_options=" \
+#              --moe-use-upcycling \
+#              --num-experts 8 \
+#              --expert-model-parallel-size 8 \
+#              --moe-grouped-gemm \
+#              --moe-permute-fusion \
+#              --moe-router-load-balancing-type aux_loss \
+#              --moe-router-topk 2 \
+#              --moe-aux-loss-coeff 1e-2 \
+#              --use-distributed-optimizer \
+#              --moe-token-dispatcher-type alltoall
+#              "
+#  ${moe_options}
 run_cmd="torchrun $DISTRIBUTED_ARGS pretrain_qwen.py
  ${megatron_options} ${dataset_option} ${pr_options} ${load_options} ${activation_checkpoint_options} \
- ${do_options} ${gqa_options} ${sft_option} ${tie_option} ${packing_options} ${uneven_split_option} ${vp_options} ${comm_overlap_option} ${offload_option}"
+ ${do_options} ${gqa_options} ${sft_option} ${tie_option} ${packing_options} ${uneven_split_option} ${vp_options} ${comm_overlap_option} ${offload_option} ${moe_options}"
 
 echo ${run_cmd}
 eval ${run_cmd}

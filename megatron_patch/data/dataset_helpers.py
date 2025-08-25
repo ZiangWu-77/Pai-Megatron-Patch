@@ -129,7 +129,7 @@ class TaskEncoder(DefaultTaskEncoder[Union[VQASample, ChatMLSample], ImageTaskSa
         self.temporal_patch_size = self.args.temporal_patch_size
         self.merge_size = self.args.spatial_merge_size
         self.patch_size = self.args.patch_size
-
+        
         self.seq_len = self.args.max_padding_length
 
     def encode_sample(self, sample: Union[VQASample, ChatMLSample]):
@@ -177,6 +177,66 @@ class TaskEncoder(DefaultTaskEncoder[Union[VQASample, ChatMLSample], ImageTaskSa
             flattened.append(flatten_patches)
             thw_grids.append((grid_t, grid_h, grid_w))
         return flattened, np.array(thw_grids)
+
+    def post_process_prompt_corrected(self, prompt_string: str) -> str:
+        """
+        Applies precise formatting rules to a prompt string.
+        对提示字符串应用精确的格式化规则。
+        """
+        if not isinstance(prompt_string, str):
+            # Add a type check to make the error clearer
+            # 添加一个类型检查，让错误更明确
+            raise TypeError(f"Input must be a string, but got {type(prompt_string)}")
+
+        image_placeholder = "<|vision_start|><|image_pad|><|vision_end|>"
+        
+        processed_string = prompt_string.replace(
+            image_placeholder, 
+            image_placeholder + '\n'
+        )
+        
+        final_string = processed_string.rstrip('\n')
+        
+        return final_string
+    
+    def post_process_turn_corrected(self, prompt_string: str) -> str:
+        """
+        Applies precise formatting rules to a prompt string.
+        对提示字符串应用精确的格式化规则。
+        """
+        if not isinstance(prompt_string, str):
+            # Add a type check to make the error clearer
+            # 添加一个类型检查，让错误更明确
+            raise TypeError(f"Input must be a string, but got {type(prompt_string)}")
+
+        image_placeholder = "<|vision_start|><|image_pad|><|vision_end|>"
+        
+        processed_string = prompt_string.replace(
+            image_placeholder, 
+            image_placeholder + '\n'
+        )
+        
+        return processed_string
+
+    def tokenize_prompt(self, conversation, type: str="turn"):
+        """
+        Applies precise formatting rules to a prompt string.
+        """
+        try:
+            input_ids = self.tokenizer.apply_chat_template(conversation, tokenize=False)
+
+            image_placeholder = "<|vision_start|><|image_pad|><|vision_end|>"
+            
+            input_ids = input_ids.replace(
+                image_placeholder, 
+                image_placeholder + '\n'
+            )
+            if type is not "turn":
+                input_ids = input_ids.rstrip('\n')
+            input_ids = self.tokenizer(input_ids, padding=False, return_tensors="np")['input_ids'][0]
+            return input_ids
+        except Exception as e:
+            print(f"[ERROR] Failed to create input_ids: {e}")
 
     def encode_chatml(self, sample: ChatMLSample):
         # TODO: modify get_visual_transform to add more augmentations
@@ -236,20 +296,34 @@ class TaskEncoder(DefaultTaskEncoder[Union[VQASample, ChatMLSample], ImageTaskSa
         conversation = converted_conversation
 
         # NOTE: we need to mask all system/user input tokens and assistant generation prefix tokens
-        input_ids = self.tokenizer.apply_chat_template(conversation, tokenize=True, return_tensors="np")[0]
+        # print(conversation)
+        # print(type(input_ids))
+        input_ids = self.tokenize_prompt(conversation, type="prompt")
+        # print(input_ids)
+        # input_ids = self.tokenizer.apply_chat_template(conversation, tokenize=True, return_tensors="np")[0]
+        # print(input_ids)
         target = input_ids.copy()
-
-        system_prompt_prefix = len(self.tokenizer.apply_chat_template([conversation[0]], tokenize=True))
+        # print(input_ids)
+        # system_prompt_prefix = len(self.tokenizer.apply_chat_template([conversation[0]], tokenize=True))
+        system_prompt_prefix = len(self.tokenize_prompt([conversation[0]], type="turn"))
         assistant_generation_prefix = 3
         pad_token_id = self.tokenizer.pad_token_id
 
         target[:system_prompt_prefix] = pad_token_id
         offset = system_prompt_prefix
         for turn_idx, turn in enumerate(conversation[1:]):
-            turn_tokens = self.tokenizer.apply_chat_template([turn], tokenize=True, return_tensors="np")[0]
+            # turn_tokens = self.tokenizer.apply_chat_template([turn], tokenize=True, return_tensors="np")[0]
+            if turn_idx != len(conversation[1:]) - 1:
+                turn_tokens = self.tokenize_prompt([turn], type="turn")
+            else:
+                turn_tokens = self.tokenize_prompt([turn], type="prompt")
             turn_content = turn_tokens[system_prompt_prefix:]
             n_tokens = len(turn_content)
             if (target[offset: offset + n_tokens] != turn_content).any():
+                # print("turn idx", turn_idx)
+                # print(turn_tokens[:system_prompt_prefix])
+                # print(target[offset: offset + n_tokens])
+                # print(turn_content)
                 raise InternalWarning("Encode Error")
 
             if turn['role'] == 'user':
@@ -273,7 +347,7 @@ class TaskEncoder(DefaultTaskEncoder[Union[VQASample, ChatMLSample], ImageTaskSa
             - image_thw_grids.shape[0] + image_thw_grids.prod(axis=-1).sum() // merge_length
             - video_thw_grids.shape[0] + video_thw_grids.prod(axis=-1).sum() // merge_length
         )
-        if target_length > self.seq_len:
+        if target_length > self.args.seq_length:
             raise InternalWarning(f"Long sequence with length {target_length} found, dropped...")
         final_input_ids = np.zeros(target_length, dtype=input_ids.dtype)
         final_input_masks = final_input_ids.copy()
@@ -425,6 +499,7 @@ class TaskEncoder(DefaultTaskEncoder[Union[VQASample, ChatMLSample], ImageTaskSa
             imgs = torch.empty([0, 3 * self.temporal_patch_size * self.patch_size * self.patch_size], dtype=torch.float32)
         
         image_thw_grids = [thw_grids for s in samples for thw_grids in s.image_thw_grids]
+
         if len(image_thw_grids) > 0:
             image_thw_grids = torch.from_numpy(np.array(image_thw_grids)).long()
             assert image_thw_grids.prod(dim=-1).sum() == imgs.shape[0]

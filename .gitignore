@@ -3,3 +3,7 @@
 .vscode
 *.DS_Store
 .ipynb_checkpoints
+*.whl
+*.pt
+*.png
+*.zip

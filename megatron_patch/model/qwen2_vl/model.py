@@ -246,7 +246,7 @@ class Qwen2VLModel(MegatronModule):
                 if image_embeds is not None:
                     image_input_mask = image_input_mask.T # shape [seqlen, mbs]
                 if video_embeds is not None:
-                    video_input_mask = video_input_mask.T
+                    video_input_mask = video_input_mask.T      
                 combined_embeddings = self.language_model.embedding(
                     input_ids=input_ids,
                     position_ids=None, # NOTE: disable
@@ -262,7 +262,6 @@ class Qwen2VLModel(MegatronModule):
                 )  # [text_seq_len, b, h_language]
         else:
             combined_embeddings = None
-
         output = self.language_model(
             input_ids=None,
             position_ids=position_ids,              # None in encoder

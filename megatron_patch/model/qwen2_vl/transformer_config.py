@@ -18,6 +18,9 @@ from megatron.core.transformer import TransformerConfig
 from megatron.training.activations import quick_gelu
 from megatron.core import parallel_state
 
+# def quick_gelu(x: torch.Tensor) -> torch.Tensor:
+#     return x * torch.sigmoid(1.702 * x)
+
 @dataclass
 class Qwen2VLTransformerConfig(TransformerConfig):
 
@@ -27,7 +30,6 @@ class Qwen2VLTransformerConfig(TransformerConfig):
     max_position_embeddings: int = None
     moe_aux_loss_coeff: float = 0.0
     mrope_section: List[int] = field(default_factory=lambda:[16, 24, 24])
-
     # The following options are set with --disable-bias-linear --add-qkv-bias
     # in the script
     # add_bias_linear = False

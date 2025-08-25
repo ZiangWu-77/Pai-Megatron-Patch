@@ -10,6 +10,7 @@ from megatron.core import InferenceParams, parallel_state, tensor_parallel
 from .rope_utils import (
     apply_rotary_pos_emb,
     apply_rotary_pos_emb_with_cos_sin,
+    apply_rotary_pos_emb_vision
 )
 from megatron.core.parallel_state import (
     get_data_parallel_group,
@@ -410,7 +411,6 @@ class Attention(MegatronModule, ABC):
             query = query.squeeze(1)
             key = key.squeeze(1)
             value = value.squeeze(1)
-
         # ================================================
         # relative positional embedding (rotary embedding)
         # ================================================
@@ -428,11 +428,12 @@ class Attention(MegatronModule, ABC):
                     cu_seqlens_kv = packed_seq_params.cu_seqlens_kv
             else:
                 cu_seqlens_q = cu_seqlens_kv = None
-            query = apply_rotary_pos_emb(
-                query, q_pos_emb, config=self.config, cu_seqlens=cu_seqlens_q
-            )
-            key = apply_rotary_pos_emb(key, k_pos_emb, config=self.config, cu_seqlens=cu_seqlens_kv)
-
+            # query = apply_rotary_pos_emb(
+            #     query, q_pos_emb, config=self.config, cu_seqlens=cu_seqlens_q
+            # )
+            # key = apply_rotary_pos_emb(key, k_pos_emb, config=self.config, cu_seqlens=cu_seqlens_kv)
+            query = apply_rotary_pos_emb_vision(query.unsqueeze(0), rotary_pos_emb).squeeze(0)
+            key = apply_rotary_pos_emb_vision(key.unsqueeze(0), rotary_pos_emb).squeeze(0)
             # TODO, can apply positional embedding to value_layer so it has
             # absolute positional embedding.
             # otherwise, only relative positional embedding takes effect
@@ -473,9 +474,8 @@ class Attention(MegatronModule, ABC):
         # =================
         # Output. [sq, b, h]
         # =================
-
         output, bias = self.linear_proj(core_attn_out)
-
+        
         return output, bias
 
 
@@ -613,7 +613,6 @@ class SelfAttention(Attention):
         """
         # Attention heads [sq, b, h] --> [sq, b, ng * (np/ng + 2) * hn)]
         mixed_qkv, _ = self.linear_qkv(hidden_states)
-
         # [sq, b, hp] --> [sq, b, ng, (np/ng + 2) * hn]
         new_tensor_shape = mixed_qkv.size()[:-1] + (
             self.num_query_groups_per_partition,

@@ -16,6 +16,7 @@ from typing import Literal
 
 import torch
 from torch import Tensor
+import torch.nn as nn
 
 from megatron.core import tensor_parallel
 from megatron.core.transformer.module import MegatronModule
@@ -52,7 +53,7 @@ class LanguageModelEmbedding(MegatronModule):
         self.num_tokentypes = num_tokentypes
         self.reduce_scatter_embeddings = False
 
-        # Word embeddings (parallel).
+        # Word embeddings (parallel). hack it.
         self.word_embeddings = tensor_parallel.VocabParallelEmbedding(
             num_embeddings=self.vocab_size,
             embedding_dim=self.config.hidden_size,
@@ -60,7 +61,10 @@ class LanguageModelEmbedding(MegatronModule):
             reduce_scatter_embeddings=self.reduce_scatter_embeddings,
             config=self.config,
         )
-
+        # self.word_embeddings = nn.Embedding(
+        #     vocab_size,
+        #     config.hidden_size,
+        # )
         # Position embedding (serial).
         if self.add_position_embedding:
             self.position_embeddings = torch.nn.Embedding(
@@ -156,7 +160,11 @@ class LanguageModelEmbedding(MegatronModule):
         else:
             embeddings = embeddings.clone()
             if image_embeds is not None:
-                embeddings[image_input_mask] = image_embeds.to(embeddings.device, embeddings.dtype)
+                # embeddings[image_input_mask] = image_embeds.to(embeddings.device, embeddings.dtype)
+                embeddings = embeddings.transpose(0, 1)
+                image_input_mask = image_input_mask.transpose(0,1).unsqueeze(-1).expand_as(embeddings)
+                embeddings = embeddings.masked_scatter(image_input_mask, image_embeds.to(embeddings.device, embeddings.dtype))
+                embeddings = embeddings.transpose(0, 1)
             if video_embeds is not None:
                 embeddings[video_input_mask] = video_embeds.to(embeddings.device, embeddings.dtype)
             embeddings = self.embedding_dropout(embeddings)

@@ -24,14 +24,14 @@ else
         --target-num-layers-per-virtual-pipeline-stage ${MP_VP}"
 fi
 
-MODEL_SIZE=$1
-SOURCE_CKPT_PATH=$2
-TARGET_CKPT_PATH=$3
-TP=$4
-PP=$5
-MG2HF=$6
-PR=$7
-HF_CKPT_PATH=$8
+MODEL_SIZE=2B
+SOURCE_CKPT_PATH=/home/ma-user/work/wza/Model/Qwen2-VL-2B-Instruct
+TARGET_CKPT_PATH=/home/ma-user/work/wza/Model/Qwen2-VL-2B-Instruct-4E-mcore
+TP=1
+PP=1
+MG2HF=false
+PR=bf16
+# HF_CKPT_PATH=/cache/wza/Model/Qwen2-VL-2B-Instruct
 
 CURRENT_DIR="$( cd "$( dirname "$0" )" && pwd )"
 MEGATRON_PATCH_PATH=$( dirname $(dirname $( dirname ${CURRENT_DIR})))
@@ -66,7 +66,7 @@ NUM_ATTN_HEADS=28
 INTERMEDIATE_SIZE=18944
 NUM_KEY_VALUE_HEADS=4
 MAX_POSITION_EMBEDDINGS=131072
-EXTRA_VOCAB_SIZE=421  # 151643 + 421 = 152064
+EXTRA_VOCAB_SIZE=293  # 151643 + 421 = 152064
 RMS_NORM_EPS=1e-6
 
 gqa_options=" \
@@ -151,6 +151,26 @@ else
     exit -1
 fi
 
+ROUTER_TOPK=2
+NUM_EXPERTS=8
+ETP=1
+EP=8
+MOE_INTERMEDIATE_SIZE=8960
+SHARED_EXPERT_INTERMEDIATE_SIZE=8960
+# --moe-layer-freq ([1]*28) \
+## MoE options
+# moe_options="--moe-grouped-gemm \
+#     --moe-token-dispatcher-type alltoall \
+#     --moe-router-topk ${ROUTER_TOPK} \
+#     --num-experts ${NUM_EXPERTS} \
+#     --expert-tensor-parallel-size ${ETP} \
+#     --expert-model-parallel-size ${EP} \
+#     --moe-ffn-hidden-size ${MOE_INTERMEDIATE_SIZE} \
+#     --moe-router-load-balancing-type aux_loss \
+#     --moe-aux-loss-coeff 0.001 \
+#     --moe-layer-freq '([1]*28)' \
+#     --moe-shared-expert-intermediate-size ${SHARED_EXPERT_INTERMEDIATE_SIZE}"
+
 mkdir -p ${TARGET_CKPT_PATH}
 # NOTE: model.safetensors.index.json will be copied by the following line and 
 # should be removed in mg->hf conversion if save_safetensor is disabled.
@@ -194,7 +214,10 @@ cmd="torchrun ${DISTRIBUTED_ARGS} hf2mcore_qwen2_vl.py \
     ${tie_option} \
     ${gqa_options} \
     ${uneven_split_option} \
-    ${vp_options}"
+    ${vp_options} \
+    --num-experts 4 \
+    --target-expert-model-parallel-size 4 \
+    --moe-shared-expert-intermediate-size 8960"
 
 echo $cmd
 eval $cmd
