@@ -9,7 +9,7 @@
 	url = https://github.com/NVIDIA/Megatron-LM.git
 [submodule "backends/megatron/Megatron-LM-250217"]
 	path = backends/megatron/Megatron-LM-250217
-	url = https://github.com/NVIDIA/Megatron-LM.git
+	url = https://github.com/ZiangWu-77/Megatron-LM.git
 [submodule "backends/megatron/Megatron-LM-250328"]
 	path = backends/megatron/Megatron-LM-250328
 	url = https://github.com/NVIDIA/Megatron-LM.git
