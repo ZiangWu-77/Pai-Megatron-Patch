@@ -450,6 +450,9 @@ def convert_checkpoint_from_transformers_to_megatron(hfmodel, mgmodel, args):
             experts_numel += safe_copy(fc1_weight, mg_experts.linear_fc1.weight)
             experts_numel += safe_copy(fc2_weight, mg_experts.linear_fc2.weight)
         copied_numel += experts_numel // args.num_experts
+        if args.moe_shared_expert_intermediate_size is not None:
+            mglayer.mlp.shared_experts.linear_fc1.weight.copy_(fc1_weight)
+            mglayer.mlp.shared_experts.linear_fc2.weight.copy_(fc2_weight)
         copied_numel += safe_copy(hflayer.post_attention_layernorm.weight, mglayer.pre_mlp_layernorm.weight)
     
     copied_numel += safe_copy(hfllm.norm.weight, mgllm.decoder.final_layernorm.weight)

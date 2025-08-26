@@ -26,7 +26,7 @@ fi
 
 MODEL_SIZE=2B
 SOURCE_CKPT_PATH=/home/ma-user/work/wza/Model/Qwen2-VL-2B-Instruct
-TARGET_CKPT_PATH=/home/ma-user/work/wza/Model/Qwen2-VL-2B-Instruct-4E-mcore
+TARGET_CKPT_PATH=/home/ma-user/work/wza/Model/Qwen2-VL-2B-Instruct-5E1S-mcore
 TP=1
 PP=1
 MG2HF=false

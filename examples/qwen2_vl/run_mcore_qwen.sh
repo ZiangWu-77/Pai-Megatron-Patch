@@ -68,7 +68,7 @@ OPTIMIZER_OFFLOAD=false
 SAVE_INTERVAL=10000
 DATASET_PATH="/home/ma-user/work/Dataset/Cambrian737k/Cambrian737k/wds-train"
 VALID_DATASET_PATH="/home/ma-user/work/Dataset/Cambrian737k/Cambrian737k/wds-train"
-PRETRAIN_CHECKPOINT_PATH="/home/ma-user/work/wza/Model/Qwen2-VL-2B-Instruct-4E-mcore"
+PRETRAIN_CHECKPOINT_PATH="/home/ma-user/work/wza/Model/Qwen2-VL-2B-Instruct-5E1S-mcore"
 
 TRAIN_ITERS=5439
 LR_WARMUP_ITERS=272
@@ -265,6 +265,7 @@ moe_options="\
         --moe-token-dispatcher-type alltoall \
         --moe-router-load-balancing-type aux_loss \
         --moe-aux-loss-coeff 0.001 \
+        --moe-shared-expert-intermediate-size 8960 \
         "
 megatron_options="  \
         --train-data-path ${DATASET_PATH} \
