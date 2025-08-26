@@ -443,16 +443,23 @@ def convert_checkpoint_from_transformers_to_megatron(hfmodel, mgmodel, args):
         # moe weight copy
         mglayer.mlp.router.weight.data.normal_(mean=0.0, std=0.02)
         # copied_numel += mglayer.mlp.router.weight.numel()
-        fc1_weight = torch.cat([hflayer.mlp.gate_proj.weight, hflayer.mlp.up_proj.weight])
-        fc2_weight = hflayer.mlp.down_proj.weight
+        chunked_gate_proj_weight = torch.chunk(hflayer.mlp.gate_proj.weight, 16, dim=0)
+        chunked_up_proj_weight = torch.chunk(hflayer.mlp.up_proj.weight, 16, dim=0)
+        chunked_down_proj_weight = torch.chunk(hflayer.mlp.down_proj.weight, 16, dim=1)
+        fc1_weight = [torch.cat([gate, up]) for gate, up in zip(chunked_gate_proj_weight, chunked_up_proj_weight)]
+        fc2_weight = list(chunked_down_proj_weight)
+        shared_fc1_weight = torch.cat([hflayer.mlp.gate_proj.weight, hflayer.mlp.up_proj.weight])
+        shared_fc2_weight = hflayer.mlp.down_proj.weight
         experts_numel = 0
-        for i, mg_experts in enumerate(mglayer.mlp.experts.local_experts):
-            experts_numel += safe_copy(fc1_weight, mg_experts.linear_fc1.weight)
-            experts_numel += safe_copy(fc2_weight, mg_experts.linear_fc2.weight)
-        copied_numel += experts_numel // args.num_experts
+        for i in range(80):
+            linear_fc1_weighti = getattr(mglayer.mlp.experts.linear_fc1, 'weight' + str(i))
+            linear_fc2_weighti = getattr(mglayer.mlp.experts.linear_fc2, 'weight' + str(i))
+            experts_numel += safe_copy(fc1_weight[i%16], linear_fc1_weighti)
+            experts_numel += safe_copy(fc2_weight[i%16], linear_fc2_weighti)
+        copied_numel += experts_numel // 5
         if args.moe_shared_expert_intermediate_size is not None:
-            mglayer.mlp.shared_experts.linear_fc1.weight.copy_(fc1_weight)
-            mglayer.mlp.shared_experts.linear_fc2.weight.copy_(fc2_weight)
+            mglayer.mlp.shared_experts.linear_fc1.weight.copy_(shared_fc1_weight)
+            mglayer.mlp.shared_experts.linear_fc2.weight.copy_(shared_fc2_weight)
         copied_numel += safe_copy(hflayer.post_attention_layernorm.weight, mglayer.pre_mlp_layernorm.weight)
     
     copied_numel += safe_copy(hfllm.norm.weight, mgllm.decoder.final_layernorm.weight)
@@ -675,7 +682,7 @@ def save_mgmodel(mgmodel, args):
             full_model.pop(k)
     
     # only support expert parallel lonely, TODO:tp+pp+ep
-    expert_pattern = r"local_experts\.(\d+)"
+    expert_pattern = r"weight(\d+)"
     if args.expert_model_parallel_size > 1:
         assert args.num_experts > 1, "num_experts should be given."
         assert args.num_experts % args.expert_model_parallel_size == 0
@@ -693,12 +700,12 @@ def save_mgmodel(mgmodel, args):
                 ep_rank
             )
             for k, v in full_model.items():
-                if 'local_experts' in k:
+                if 'experts' in k and 'shared_experts' not in k and '_extra_state' not in k:
                     expert_rank = int(re.findall(expert_pattern, k)[0])
                     if expert_rank // num_local_experts != ep_rank:
                         continue
                     expert_local_rank = expert_rank % num_local_experts
-                    k = k.replace(f'local_experts.{expert_rank}', f'local_experts.{expert_local_rank}')
+                    k = k.replace(f'weight{expert_rank}', f'weight{expert_local_rank}')
                 model_split[k] = v
             save_state_dict(args, [model_split], checkpoint_name)
     elif (

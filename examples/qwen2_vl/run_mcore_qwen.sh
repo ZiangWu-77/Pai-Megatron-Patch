@@ -68,13 +68,13 @@ OPTIMIZER_OFFLOAD=false
 SAVE_INTERVAL=10000
 DATASET_PATH="/home/ma-user/work/Dataset/Cambrian737k/Cambrian737k/wds-train"
 VALID_DATASET_PATH="/home/ma-user/work/Dataset/Cambrian737k/Cambrian737k/wds-train"
-PRETRAIN_CHECKPOINT_PATH="/home/ma-user/work/wza/Model/Qwen2-VL-2B-Instruct-5E1S-mcore"
+PRETRAIN_CHECKPOINT_PATH="/home/ma-user/work/wza/Model/Qwen2-VL-2B-Instruct-80E1S16A-mcore"
 
 TRAIN_ITERS=5439
 LR_WARMUP_ITERS=272
 ###############################
 
-OUTPUT_BASEPATH=/cache/wza/Model/output_mcore_qwen2vl_4e2a_aux0_sft
+OUTPUT_BASEPATH=/cache/wza/Model/output_mcore_qwen2vl_80e1s16a_aux0.001_sft
 ### OTHERS ###
 if [ $FL = true ]; then
     export NVTE_FLASH_ATTN=1 NVTE_FUSED_ATTN=0
@@ -259,14 +259,17 @@ find -L ${PRETRAIN_CHECKPOINT_PATH} -maxdepth 1 -type f -name "merges.txt" -prin
 # --init-method-std 0.02 \　not allowed
 
 moe_options="\
-        --expert-model-parallel-size 4 \
-        --num-experts 4 \
-        --moe-router-topk 2 \
+        --expert-model-parallel-size 8 \
+        --num-experts 80 \
+        --moe-router-topk 16 \
         --moe-token-dispatcher-type alltoall \
         --moe-router-load-balancing-type aux_loss \
         --moe-aux-loss-coeff 0.001 \
         --moe-shared-expert-intermediate-size 8960 \
+        --moe-ffn-hidden-size 560 \
+        --moe-grouped-gemm \
         "
+
 megatron_options="  \
         --train-data-path ${DATASET_PATH} \
         --valid-data-path ${VALID_DATASET_PATH} \
