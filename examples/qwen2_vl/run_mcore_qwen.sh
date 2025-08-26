@@ -44,7 +44,7 @@ DISTRIBUTED_ARGS="--nproc_per_node $GPUS_PER_NODE --nnodes $NNODES --node_rank $
 
 ### BASE CONFIG ###
 MODEL_SIZE="2B"
-BATCH_SIZE=4
+BATCH_SIZE=2
 GLOBAL_BATCH_SIZE=128
 LR=5e-6
 MIN_LR=0
@@ -68,7 +68,7 @@ OPTIMIZER_OFFLOAD=false
 SAVE_INTERVAL=10000
 DATASET_PATH="/home/ma-user/work/Dataset/Cambrian737k/Cambrian737k/wds-train"
 VALID_DATASET_PATH="/home/ma-user/work/Dataset/Cambrian737k/Cambrian737k/wds-train"
-PRETRAIN_CHECKPOINT_PATH="/home/ma-user/work/wza/Model/Qwen2-VL-2B-Instruct-80E1S16A-mcore"
+PRETRAIN_CHECKPOINT_PATH="/home/ma-user/work/wza/Model/Qwen2-VL-2B-Instruct-80E1S16A-mcore-ep8"
 
 TRAIN_ITERS=5439
 LR_WARMUP_ITERS=272

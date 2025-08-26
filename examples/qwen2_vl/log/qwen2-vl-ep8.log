@@ -1,0 +1,965 @@
+torchrun --nproc_per_node 8 --nnodes 1 --node_rank 0 --master_addr localhost --master_port 12421 pretrain_qwen.py --train-data-path /home/ma-user/work/Dataset/Cambrian737k/Cambrian737k/wds-train --valid-data-path /home/ma-user/work/Dataset/Cambrian737k/Cambrian737k/wds-train --split 10,0,0 --save /cache/wza/Model/output_mcore_qwen2vl_80e1s16a_aux0.001_sft/checkpoint/finetune-mcore-qwen2-vl-2B-lr-5e-6-minlr-0-bs-2-gbs-128-seqlen-4096-pr-bf16-tp-1-pp-1-cp-1-ac-false-do-true-sp-true-ti-5439-wi-272 --lr 5e-6 --min-lr 0 --lr-decay-style cosine --weight-decay 0.1 --adam-beta1 0.9 --adam-beta2 0.95 --clip-grad 1.0 --attention-dropout 0.0 --hidden-dropout 0.0 --lr-decay-iters 5167 --lr-warmup-iters 272 --train-iters 5439 --micro-batch-size 2 --global-batch-size 128 --num-layers 28 --hidden-size 1536 --num-attention-heads 12 --ffn-hidden-size 8960 --seq-length 4096 --max-position-embeddings 32768 --log-interval 1 --log-throughput --eval-interval 1000 --eval-iters 10 --save-interval 10000 --tensorboard-queue-size 1 --tensorboard-dir /cache/wza/Model/output_mcore_qwen2vl_80e1s16a_aux0.001_sft/tensorboard/finetune-mcore-qwen2-vl-2B-lr-5e-6-minlr-0-bs-2-gbs-128-seqlen-4096-pr-bf16-tp-1-pp-1-cp-1-ac-false-do-true-sp-true-ti-5439-wi-272_2025.08.27-00.00.54 --log-timers-to-tensorboard --log-validation-ppl-to-tensorboard --wandb-project qwen-megatron --wandb-exp-name finetune-mcore-qwen2-vl-2B-lr-5e-6-minlr-0-bs-2-gbs-128-seqlen-4096-pr-bf16-tp-1-pp-1-cp-1-ac-false-do-true-sp-true-ti-5439-wi-272 --wandb-save-dir /cache/wza/Pai-Megatron-Patch/examples/qwen2_vl/swanlab --tensor-model-parallel-size 1 --pipeline-model-parallel-size 1 --context-parallel-size 1 --no-load-optim --no-load-rng --num-workers 8 --extra-vocab-size 293 --patch-tokenizer-type Qwen2VLTokenizer --swiglu --normalization RMSNorm --norm-epsilon 1e-6 --use-rotary-position-embeddings --position-embedding-type rope --disable-bias-linear --add-qkv-bias --rotary-percent 1.0 --rotary-base 1000000 --rotary-seq-len-interpolation-factor 1 --no-save-optim --disable-vision-class-token --dataloader-type external --transformer-impl transformer_engine --ckpt-format torch --freeze-ViT --bf16 --load /home/ma-user/work/wza/Model/Qwen2-VL-2B-Instruct-80E1S16A-mcore-ep8 --use-distributed-optimizer --group-query-attention --num-query-groups 2 --expert-model-parallel-size 8 --num-experts 80 --moe-router-topk 16 --moe-token-dispatcher-type alltoall --moe-router-load-balancing-type aux_loss --moe-aux-loss-coeff 0.001 --moe-shared-expert-intermediate-size 8960 --moe-ffn-hidden-size 560 --moe-grouped-gemm
+W0827 00:00:57.396000 3712876 /home/ma-user/work/anaconda3/envs/megatron/lib/python3.12/site-packages/torch/distributed/run.py:793] 
+W0827 00:00:57.396000 3712876 /home/ma-user/work/anaconda3/envs/megatron/lib/python3.12/site-packages/torch/distributed/run.py:793] *****************************************
+W0827 00:00:57.396000 3712876 /home/ma-user/work/anaconda3/envs/megatron/lib/python3.12/site-packages/torch/distributed/run.py:793] Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
+W0827 00:00:57.396000 3712876 /home/ma-user/work/anaconda3/envs/megatron/lib/python3.12/site-packages/torch/distributed/run.py:793] *****************************************
+/home/ma-user/work/wza/Pai-Megatron-Patch/megatron_patch/data/dataset_helpers.py:234: SyntaxWarning: "is not" with 'str' literal. Did you mean "!="?
+  if type is not "turn":
+/home/ma-user/work/wza/Pai-Megatron-Patch/megatron_patch/data/dataset_helpers.py:234: SyntaxWarning: "is not" with 'str' literal. Did you mean "!="?
+  if type is not "turn":
+/home/ma-user/work/wza/Pai-Megatron-Patch/megatron_patch/data/dataset_helpers.py:234: SyntaxWarning: "is not" with 'str' literal. Did you mean "!="?
+  if type is not "turn":
+/home/ma-user/work/wza/Pai-Megatron-Patch/megatron_patch/data/dataset_helpers.py:234: SyntaxWarning: "is not" with 'str' literal. Did you mean "!="?
+  if type is not "turn":
+/home/ma-user/work/wza/Pai-Megatron-Patch/megatron_patch/data/dataset_helpers.py:234: SyntaxWarning: "is not" with 'str' literal. Did you mean "!="?
+  if type is not "turn":
+/home/ma-user/work/wza/Pai-Megatron-Patch/megatron_patch/data/dataset_helpers.py:234: SyntaxWarning: "is not" with 'str' literal. Did you mean "!="?
+  if type is not "turn":
+/home/ma-user/work/wza/Pai-Megatron-Patch/megatron_patch/data/dataset_helpers.py:234: SyntaxWarning: "is not" with 'str' literal. Did you mean "!="?
+  if type is not "turn":
+/home/ma-user/work/wza/Pai-Megatron-Patch/megatron_patch/data/dataset_helpers.py:234: SyntaxWarning: "is not" with 'str' literal. Did you mean "!="?
+  if type is not "turn":
+Virtual model parallel size  None
+Virtual model parallel size  None
+Virtual model parallel size  None
+Virtual model parallel size  None
+Virtual model parallel size using world size: 8, data-parallel size: 8, context-parallel size: 1, hierarchical context-parallel sizes: Nonetensor-model-parallel size: 1, encoder-tensor-model-parallel size: 0, pipeline-model-parallel size: 1, encoder-pipeline-model-parallel size: 0 None
+
+Virtual model parallel size  NoneWARNING: overriding default arguments for tokenizer_type:Qwen2VLTokenizer                        with tokenizer_type:NullTokenizer
+
+Virtual model parallel size Virtual model parallel size  None
+ None
+accumulate and all-reduce gradients in fp32 for bfloat16 data type.
+using torch.bfloat16 for parameters ...
+------------------------ arguments ------------------------
+  account_for_embedding_in_pipeline_split ......... False
+  account_for_loss_in_pipeline_split .............. False
+  accumulate_allreduce_grads_in_fp32 .............. True
+  adam_beta1 ...................................... 0.9
+  adam_beta2 ...................................... 0.95
+  adam_eps ........................................ 1e-08
+  adaptive_seq_len ................................ False
+  add_bias_attn_fc ................................ True
+  add_bias_linear ................................. False
+  add_bias_linear_fc .............................. True
+  add_position_embedding .......................... True
+  add_qkv_bias .................................... True
+  adlr_autoresume ................................. False
+  adlr_autoresume_interval ........................ 1000
+  align_grad_reduce ............................... True
+  align_param_gather .............................. False
+  allow_missing_vision_projection_checkpoint ...... False
+  app_tag_run_name ................................ None
+  app_tag_run_version ............................. 0.0.0
+  apply_layernorm_1p .............................. False
+  apply_query_key_layer_scaling ................... False
+  apply_residual_connection_post_layernorm ........ False
+  apply_rope_fusion ............................... True
+  async_save ...................................... None
+  async_tensor_model_parallel_allreduce ........... True
+  attention_backend ............................... AttnBackend.auto
+  attention_dropout ............................... 0.0
+  attention_head_type ............................. None
+  attention_softmax_in_fp32 ....................... False
+  auto_detect_ckpt_format ......................... False
+  barrier_with_L1_time ............................ True
+  bert_binary_head ................................ True
+  bert_embedder_type .............................. megatron
+  bert_load ....................................... None
+  bf16 ............................................ True
+  bias_dropout_fusion ............................. True
+  bias_gelu_fusion ................................ False
+  bias_swiglu_fusion .............................. True
+  biencoder_projection_dim ........................ 0
+  biencoder_shared_query_context_model ............ False
+  block_data_path ................................. None
+  calc_ft_timeouts ................................ False
+  calculate_per_token_loss ........................ False
+  check_for_large_grads ........................... False
+  check_for_nan_in_loss_and_grad .................. True
+  check_for_spiky_loss ............................ False
+  check_weight_hash_across_dp_replicas_interval ... None
+  ckpt_assume_constant_structure .................. False
+  ckpt_convert_format ............................. None
+  ckpt_convert_save ............................... None
+  ckpt_convert_update_legacy_dist_opt_format ...... False
+  ckpt_format ..................................... torch
+  ckpt_fully_parallel_load ........................ False
+  ckpt_fully_parallel_save ........................ True
+  ckpt_fully_parallel_save_deprecated ............. False
+  ckpt_step ....................................... None
+  classes_fraction ................................ 1.0
+  clip_grad ....................................... 1.0
+  clone_scatter_output_in_embedding ............... True
+  config_logger_dir ............................... 
+  consumed_train_samples .......................... 0
+  consumed_valid_samples .......................... 0
+  context_parallel_size ........................... 1
+  convert_checkpoint_from_megatron_to_transformers  False
+  cp_comm_type .................................... ['p2p']
+  cpu_offloading .................................. False
+  cpu_offloading_num_layers ....................... 0
+  create_attention_mask_in_dataloader ............. True
+  cross_entropy_loss_fusion ....................... False
+  cuda_graph_warmup_steps ......................... 3
+  cvcuda_image_processing ......................... False
+  data_args_path .................................. None
+  data_cache_path ................................. None
+  data_dir ........................................ None
+  data_parallel_random_init ....................... False
+  data_parallel_size .............................. 8
+  data_path ....................................... None
+  data_per_class_fraction ......................... 1.0
+  data_sharding ................................... True
+  dataloader_save ................................. None
+  dataloader_seq_length ........................... None
+  dataloader_type ................................. external
+  dataset ......................................... None
+  dataset_config .................................. None
+  ddp_average_in_collective ....................... False
+  ddp_bucket_size ................................. None
+  ddp_num_buckets ................................. None
+  ddp_pad_buckets_for_high_nccl_busbw ............. False
+  decoder_first_pipeline_num_layers ............... None
+  decoder_last_pipeline_num_layers ................ None
+  decoder_num_layers .............................. None
+  decoder_seq_length .............................. None
+  decoupled_lr .................................... None
+  decoupled_min_lr ................................ None
+  decrease_batch_size_if_needed ................... False
+  defer_embedding_wgrad_compute ................... False
+  deprecated_use_mcore_models ..................... False
+  deterministic_mode .............................. False
+  dino_bottleneck_size ............................ 256
+  dino_freeze_last_layer .......................... 1
+  dino_head_hidden_size ........................... 2048
+  dino_local_crops_number ......................... 10
+  dino_local_img_size ............................. 96
+  dino_norm_last_layer ............................ False
+  dino_teacher_temp ............................... 0.07
+  dino_warmup_teacher_temp ........................ 0.04
+  dino_warmup_teacher_temp_epochs ................. 30
+  disable_straggler_on_startup .................... False
+  disable_vision_class_token ...................... True
+  dist_ckpt_format_deprecated ..................... None
+  dist_ckpt_strictness ............................ assume_ok_unexpected
+  distribute_saved_activations .................... False
+  distributed_backend ............................. nccl
+  distributed_timeout_minutes ..................... 10
+  embed_layernorm ................................. False
+  embedding_path .................................. None
+  empty_unused_memory_level ....................... 0
+  enable_cuda_graph ............................... False
+  enable_ft_package ............................... False
+  enable_one_logger ............................... True
+  enable_parallel_output .......................... True
+  enable_shared_expert ............................ False
+  encoder_num_layers .............................. 28
+  encoder_pipeline_model_parallel_size ............ 0
+  encoder_seq_length .............................. 4096
+  encoder_tensor_model_parallel_size .............. 0
+  end_weight_decay ................................ 0.1
+  eod_mask_loss ................................... False
+  epochs .......................................... None
+  error_injection_rate ............................ 0
+  error_injection_type ............................ transient_error
+  eval_dev ........................................ False
+  eval_fp32 ....................................... False
+  eval_interval ................................... 1000
+  eval_iters ...................................... 10
+  evidence_data_path .............................. None
+  exit_duration_in_mins ........................... None
+  exit_interval ................................... None
+  exit_on_missing_checkpoint ...................... False
+  exit_signal_handler ............................. False
+  exp_avg_dtype ................................... torch.float32
+  exp_avg_sq_dtype ................................ torch.float32
+  expert_interval ................................. 2
+  expert_model_parallel_size ...................... 8
+  expert_tensor_parallel_size ..................... 1
+  extra_vocab_size ................................ 293
+  ffn_hidden_size ................................. 8960
+  finetune ........................................ False
+  flash_decode .................................... False
+  fp16 ............................................ False
+  fp16_lm_cross_entropy ........................... False
+  fp32_residual_connection ........................ False
+  fp8 ............................................. None
+  fp8_amax_compute_algo ........................... most_recent
+  fp8_amax_history_len ............................ 1
+  fp8_interval .................................... 1
+  fp8_margin ...................................... 0
+  fp8_param_gather ................................ False
+  fp8_wgrad ....................................... True
+  freeze_clip_vision_tower ........................ False
+  freeze_llm ...................................... False
+  freeze_LM ....................................... False
+  freeze_ViT ...................................... True
+  generation_length ............................... None
+  global_batch_size ............................... 128
+  glu_activation .................................. None
+  gradient_accumulation_fusion .................... True
+  group_query_attention ........................... True
+  head_lr_mult .................................... 1.0
+  hidden_dropout .................................. 0.0
+  hidden_size ..................................... 1536
+  hierarchical_context_parallel_sizes ............. None
+  hybrid_attention_ratio .......................... 0.0
+  hybrid_mlp_ratio ................................ 0.0
+  hybrid_override_pattern ......................... None
+  hysteresis ...................................... 2
+  ict_head_size ................................... None
+  ict_load ........................................ None
+  image_aspect_ratio .............................. square
+  image_folder .................................... 
+  image_size ...................................... None
+  image_tag_type .................................. 
+  img_h ........................................... 224
+  img_w ........................................... 224
+  indexer_batch_size .............................. 128
+  indexer_log_interval ............................ 1000
+  inference_batch_times_seqlen_threshold .......... -1
+  inference_max_batch_size ........................ 8
+  inference_max_seq_length ........................ 2560
+  inference_rng_tracker ........................... False
+  init_method_std ................................. 0.02
+  init_method_xavier_uniform ...................... False
+  initial_loss_scale .............................. 4294967296
+  input_len ....................................... 1
+  intermediate_size ............................... None
+  iter_per_epoch .................................. 1250
+  iterations_to_skip .............................. []
+  keep_last ....................................... False
+  kv_channels ..................................... 128
+  kv_lora_rank .................................... 32
+  language_model_type ............................. None
+  lazy_mpu_init ................................... None
+  load ............................................ /home/ma-user/work/wza/Model/Qwen2-VL-2B-Instruct-80E1S16A-mcore-ep8
+  local_rank ...................................... 0
+  log_interval .................................... 1
+  log_loss_scale_to_tensorboard ................... True
+  log_memory_to_tensorboard ....................... False
+  log_num_zeros_in_grad ........................... False
+  log_params_norm ................................. False
+  log_progress .................................... False
+  log_straggler ................................... False
+  log_throughput .................................. True
+  log_timers_to_tensorboard ....................... True
+  log_validation_ppl_to_tensorboard ............... True
+  log_world_size_to_tensorboard ................... False
+  logging_level ................................... None
+  loss_scale ...................................... None
+  loss_scale_window ............................... 1000
+  lr .............................................. 5e-06
+  lr_decay_iters .................................. 5167
+  lr_decay_samples ................................ None
+  lr_decay_style .................................. cosine
+  lr_warmup_fraction .............................. None
+  lr_warmup_init .................................. 0.0
+  lr_warmup_iters ................................. 272
+  lr_warmup_samples ............................... 0
+  lr_wsd_decay_iters .............................. None
+  lr_wsd_decay_samples ............................ None
+  lr_wsd_decay_style .............................. exponential
+  main_grads_dtype ................................ torch.float32
+  main_params_dtype ............................... torch.float32
+  make_vocab_size_divisible_by .................... 128
+  manual_gc ....................................... False
+  manual_gc_eval .................................. True
+  manual_gc_interval .............................. 0
+  mask_factor ..................................... 1.0
+  mask_prob ....................................... 0.15
+  mask_type ....................................... random
+  masked_softmax_fusion ........................... True
+  max_num_tiles ................................... 1
+  max_padding_length .............................. None
+  max_position_embeddings ......................... 32768
+  max_tokens_to_oom ............................... 12000
+  memory_snapshot_path ............................ snapshot.pickle
+  merge_file ...................................... None
+  micro_batch_size ................................ 2
+  microbatch_group_size_per_vp_stage .............. None
+  min_loss_scale .................................. 1.0
+  min_lr .......................................... 0.0
+  mm_projector_type ............................... None
+  mm_use_im_patch_token ........................... False
+  mm_use_im_start_end ............................. False
+  mm_vision_select_layer .......................... None
+  mmap_bin_files .................................. True
+  mock_data ....................................... False
+  moe ............................................. False
+  moe_aux_loss_coeff .............................. 0.001
+  moe_eval_capacity_factor ........................ 1.0
+  moe_expert_capacity_factor ...................... None
+  moe_expert_parallel_size ........................ None
+  moe_extended_tp ................................. False
+  moe_ffn_hidden_size ............................. 560
+  moe_grouped_gemm ................................ True
+  moe_input_feature_slicing ....................... False
+  moe_input_jitter_eps ............................ None
+  moe_layer_freq .................................. 1
+  moe_layer_recompute ............................. False
+  moe_loss_coeff .................................. 0.01
+  moe_min_capacity ................................ 4
+  moe_pad_expert_input_to_capacity ................ False
+  moe_per_layer_logging ........................... False
+  moe_permute_fusion .............................. False
+  moe_router_bias_update_rate ..................... 0.001
+  moe_router_enable_expert_bias ................... False
+  moe_router_group_topk ........................... None
+  moe_router_load_balancing_type .................. aux_loss
+  moe_router_num_groups ........................... None
+  moe_router_pre_softmax .......................... False
+  moe_router_score_function ....................... softmax
+  moe_router_topk ................................. 16
+  moe_router_topk_scaling_factor .................. None
+  moe_shared_expert_intermediate_size ............. 8960
+  moe_shared_expert_overlap ....................... False
+  moe_token_dispatcher_type ....................... alltoall
+  moe_token_drop_policy ........................... probs
+  moe_topk ........................................ 1
+  moe_train_capacity_factor ....................... 1.0
+  moe_use_legacy_grouped_gemm ..................... False
+  moe_use_upcycling ............................... False
+  moe_z_loss_coeff ................................ None
+  mscale .......................................... 1.0
+  mscale_all_dim .................................. 1.0
+  multi_latent_attention .......................... False
+  n_head_kv ....................................... None
+  nccl_communicator_config_path ................... None
+  no_load_optim ................................... True
+  no_load_rng ..................................... True
+  no_persist_layer_norm ........................... False
+  no_save_optim ................................... True
+  no_save_rng ..................................... None
+  non_persistent_ckpt_type ........................ None
+  non_persistent_global_ckpt_dir .................. None
+  non_persistent_local_ckpt_algo .................. fully_parallel
+  non_persistent_local_ckpt_dir ................... None
+  non_persistent_save_interval .................... None
+  norm_epsilon .................................... 1e-06
+  normalization ................................... RMSNorm
+  num_attention_heads ............................. 12
+  num_channels .................................... 3
+  num_classes ..................................... 1000
+  num_dataset_builder_threads ..................... 1
+  num_distributed_optimizer_instances ............. 1
+  num_experts ..................................... 80
+  num_fewshot ..................................... None
+  num_frames ...................................... 1
+  num_layers ...................................... 28
+  num_layers_per_virtual_pipeline_stage ........... None
+  num_query_groups ................................ 2
+  num_shared_experts .............................. None
+  num_virtual_stages_per_pipeline_rank ............ None
+  num_workers ..................................... 8
+  one_logger_async ................................ False
+  one_logger_project .............................. megatron-lm
+  one_logger_run_name ............................. None
+  online_evaluation_config ........................ None
+  onnx_safe ....................................... None
+  openai_gelu ..................................... False
+  optimizer ....................................... adam
+  optimizer_cpu_offload ........................... False
+  optimizer_offload_auto_threshold ................ 2147483648
+  optimizer_offload_chunk_size .................... 33554432
+  optimizer_offload_fraction ...................... 1.0
+  optimizer_offload_policy ........................ static
+  out_seq_length .................................. 1024
+  output_bert_embeddings .......................... False
+  overlap_cpu_optimizer_d2h_h2d ................... False
+  overlap_grad_reduce ............................. False
+  overlap_p2p_comm ................................ False
+  overlap_p2p_comm_warmup_flush ................... False
+  overlap_param_gather ............................ False
+  overlap_param_gather_with_optimizer_step ........ False
+  override_opt_param_scheduler .................... False
+  params_dtype .................................... torch.bfloat16
+  patch_dim ....................................... 16
+  patch_size ...................................... 14
+  patch_tokenizer_type ............................ Qwen2VLTokenizer
+  per_split_data_args_path ........................ None
+  perform_initialization .......................... True
+  pin_cpu_grads ................................... True
+  pin_cpu_params .................................. True
+  pipeline_model_parallel_comm_backend ............ None
+  pipeline_model_parallel_size .................... 1
+  pipeline_model_parallel_split_rank .............. None
+  position_embedding_type ......................... rope
+  position_encoding_2d ............................ False
+  pretrained_checkpoint ........................... None
+  profile ......................................... False
+  profile_ranks ................................... [0]
+  profile_step_end ................................ 12
+  profile_step_start .............................. 10
+  prompt_path ..................................... None
+  q_lora_rank ..................................... None
+  qk_head_dim ..................................... 128
+  qk_layernorm .................................... False
+  qk_nope_head_dim ................................ None
+  qk_pos_emb_head_dim ............................. 64
+  qk_rope_head_dim ................................ None
+  query_in_block_prob ............................. 0.1
+  rampup_batch_size ............................... None
+  rank ............................................ 0
+  recompute_granularity ........................... None
+  recompute_method ................................ None
+  recompute_num_layers ............................ None
+  record_memory_history ........................... False
+  relative_attention_max_distance ................. 128
+  relative_attention_num_buckets .................. 32
+  repetition_penalty .............................. 1.1
+  replication ..................................... False
+  replication_factor .............................. 2
+  replication_jump ................................ None
+  rerun_mode ...................................... disabled
+  reset_attention_mask ............................ False
+  reset_position_ids .............................. False
+  result_rejected_tracker_filename ................ None
+  retriever_report_topk_accuracies ................ []
+  retriever_score_scaling ......................... False
+  retriever_seq_length ............................ 256
+  retro_add_retriever ............................. False
+  retro_attention_gate ............................ 1
+  retro_cyclic_train_iters ........................ None
+  retro_encoder_attention_dropout ................. 0.1
+  retro_encoder_hidden_dropout .................... 0.1
+  retro_encoder_layers ............................ 2
+  retro_num_neighbors ............................. 2
+  retro_num_retrieved_chunks ...................... 2
+  retro_project_dir ............................... None
+  retro_verify_neighbor_count ..................... True
+  rope_scaling_factor ............................. 8.0
+  rope_type ....................................... yarn
+  rotary_base ..................................... 1000000
+  rotary_interleaved .............................. False
+  rotary_percent .................................. 1.0
+  rotary_scale_factor ............................. 1
+  rotary_scaling_factor ........................... 1.0
+  rotary_seq_len_interpolation_factor ............. 1
+  router_type ..................................... topk
+  s3_cache_path ................................... None
+  sample_rate ..................................... 1.0
+  save ............................................ /cache/wza/Model/output_mcore_qwen2vl_80e1s16a_aux0.001_sft/checkpoint/finetune-mcore-qwen2-vl-2B-lr-5e-6-minlr-0-bs-2-gbs-128-seqlen-4096-pr-bf16-tp-1-pp-1-cp-1-ac-false-do-true-sp-true-ti-5439-wi-272
+  save_interval ................................... 10000
+  scatter_gather_tensors_in_pipeline .............. True
+  seed ............................................ 1234
+  seq_length ...................................... 4096
+  sequence_parallel ............................... False
+  sgd_momentum .................................... 0.9
+  shared_moe_ffn_hidden_size ...................... None
+  short_seq_prob .................................. 0.1
+  skip_train ...................................... False
+  skipped_train_samples ........................... 0
+  sliding_window .................................. None
+  source_seq_len .................................. None
+  spatial_merge_size .............................. 2
+  spec ............................................ None
+  special_tokens .................................. ['<image>']
+  split ........................................... 10,0,0
+  squared_relu .................................... False
+  start_weight_decay .............................. 0.1
+  straggler_ctrlr_port ............................ 65535
+  straggler_minmax_count .......................... 1
+  swiglu .......................................... True
+  swin_backbone_type .............................. tiny
+  target_seq_len .................................. None
+  task_list ....................................... all
+  te_rng_tracker .................................. False
+  temperature ..................................... 1.0
+  temporal_patch_size ............................. 2
+  tensor_model_parallel_size ...................... 1
+  tensorboard_dir ................................. /cache/wza/Model/output_mcore_qwen2vl_80e1s16a_aux0.001_sft/tensorboard/finetune-mcore-qwen2-vl-2B-lr-5e-6-minlr-0-bs-2-gbs-128-seqlen-4096-pr-bf16-tp-1-pp-1-cp-1-ac-false-do-true-sp-true-ti-5439-wi-272_2025.08.27-00.00.54
+  tensorboard_log_interval ........................ 1
+  tensorboard_queue_size .......................... 1
+  test_data_path .................................. None
+  test_mode ....................................... False
+  text_generate_gt_file ........................... 
+  text_generate_input_file ........................ 
+  text_generate_output_file ....................... 
+  tiktoken_num_special_tokens ..................... 1000
+  tiktoken_pattern ................................ None
+  tiktoken_special_tokens ......................... None
+  time ............................................ False
+  timing_log_level ................................ 0
+  timing_log_option ............................... minmax
+  titles_data_path ................................ None
+  tokenizer_model ................................. None
+  tokenizer_prompt_format ......................... None
+  tokenizer_type .................................. NullTokenizer
+  top_k ........................................... 0
+  top_p ........................................... 0.0
+  tp_comm_bootstrap_backend ....................... nccl
+  tp_comm_bulk_dgrad .............................. True
+  tp_comm_bulk_wgrad .............................. True
+  tp_comm_overlap ................................. False
+  tp_comm_overlap_ag .............................. True
+  tp_comm_overlap_cfg ............................. None
+  tp_comm_overlap_rs .............................. True
+  tp_comm_overlap_rs_dgrad ........................ False
+  tp_comm_split_ag ................................ True
+  tp_comm_split_rs ................................ True
+  train_data ...................................... None
+  train_data_path ................................. ['/home/ma-user/work/Dataset/Cambrian737k/Cambrian737k/wds-train']
+  train_iters ..................................... 5439
+  train_mode ...................................... pretrain
+  train_samples ................................... None
+  train_sync_interval ............................. None
+  transformer_impl ................................ transformer_engine
+  transformer_pipeline_model_parallel_size ........ 1
+  transformer_timers .............................. False
+  transformer_type ................................ megatron
+  tune_mm_mlp_adapter ............................. False
+  untie_embeddings_and_output_weights ............. False
+  use_alibi_mask .................................. False
+  use_checkpoint_args ............................. False
+  use_checkpoint_opt_param_scheduler .............. False
+  use_cpu_initialization .......................... None
+  use_dist_ckpt ................................... False
+  use_dist_ckpt_deprecated ........................ False
+  use_distributed_optimizer ....................... True
+  use_flash_attn .................................. False
+  use_legacy_models ............................... False
+  use_llama2_rotary_position_embeddings ........... False
+  use_mistral_rotary_position_embeddings .......... False
+  use_mp_args_from_checkpoint_args ................ False
+  use_normhead .................................... False
+  use_one_sent_docs ............................... False
+  use_persistent_ckpt_worker ...................... False
+  use_precision_aware_optimizer ................... False
+  use_pytorch_profiler ............................ False
+  use_ring_exchange_p2p ........................... False
+  use_rope_scaling ................................ False
+  use_rotary_position_embeddings .................. True
+  use_te .......................................... False
+  use_thumbnail ................................... False
+  use_tiling ...................................... False
+  use_tokenizer_model_from_checkpoint_args ........ True
+  use_torch_fsdp2 ................................. False
+  use_torch_optimizer_for_cpu_offload ............. False
+  use_tp_pp_dp_mapping ............................ False
+  use_tutel ....................................... False
+  v_head_dim ...................................... 128
+  valid_data ...................................... None
+  valid_data_path ................................. ['/home/ma-user/work/Dataset/Cambrian737k/Cambrian737k/wds-train']
+  variable_seq_lengths ............................ False
+  verbosity ....................................... INFO
+  version ......................................... plain
+  virtual_pipeline_model_parallel_size ............ None
+  vision_backbone_type ............................ vit
+  vision_model_type ............................... clip
+  vision_pretraining .............................. False
+  vision_pretraining_type ......................... classify
+  vision_tower .................................... 
+  vocab_extra_ids ................................. 0
+  vocab_file ...................................... None
+  vocab_size ...................................... -1
+  wandb_exp_name .................................. finetune-mcore-qwen2-vl-2B-lr-5e-6-minlr-0-bs-2-gbs-128-seqlen-4096-pr-bf16-tp-1-pp-1-cp-1-ac-false-do-true-sp-true-ti-5439-wi-272
+  wandb_project ................................... qwen-megatron
+  wandb_save_dir .................................. /cache/wza/Pai-Megatron-Patch/examples/qwen2_vl/swanlab
+  weight_decay .................................... 0.1
+  weight_decay_incr_style ......................... constant
+  wgrad_deferral_limit ............................ 0
+  world_size ...................................... 8
+  yaml_cfg ........................................ None
+  z_loss_weight ................................... 0.0
+-------------------- end of arguments ---------------------
+> building NullTokenizer tokenizer ...
+ > padded vocab (size: 0) with 0 dummy tokens (new size: 0)
+[WARNING  | megatron.core.rerun_state_machine]: RerunStateMachine initialized in mode RerunMode.DISABLED
+> initializing torch distributed ...
+> setting tensorboard ...
+swanlab: Tracking run with swanlab version 0.6.8
+swanlab: Run data will be saved locally in 
+/home/ma-user/work/wza/Pai-Megatron-Patch/examples/qwen2_vl/swanlog/run-20250827
+_000143-mx2on1xwyqd3z4q45swbk
+swanlab: 👋 Hi luka7777,welcome to swanlab!
+swanlab: Syncing run 
+finetune-mcore-qwen2-vl-2B-lr-5e-6-minlr-0-bs-2-gbs-128-seqlen-4096-pr-bf16-tp-1
+-pp-1-cp-1-ac-false-do-true-sp-true-ti-5439-wi-272 to the cloud
+swanlab: 🏠 View project at https://swanlab.cn/@luka7777/qwen-megatron
+swanlab: 🚀 View run at 
+https://swanlab.cn/@luka7777/qwen-megatron/runs/mx2on1xwyqd3z4q45swbk
+WARNING: one_logger package is required to enable e2e metrics tracking. please go to https://confluence.nvidia.com/display/MLWFO/Package+Repositories for details to install it
+> initialized tensor model parallel with size 1
+> initialized pipeline model parallel with size 1
+> setting random seeds to 1234 ...
+> compiling dataset index builder ...
+[rank7]:[W827 00:01:45.104735813 ProcessGroupNCCL.cpp:4115] [PG ID 0 PG GUID 0 Rank 7]  using GPU 7 to perform barrier as devices used by this process are currently unknown. This can potentially cause a hang if this rank to GPU mapping is incorrect.Specify device_ids in barrier() to force use of a particular device,or call init_process_group() with a device_id.
+make: Entering directory '/home/ma-user/work/wza/Pai-Megatron-Patch/backends/megatron/Megatron-LM-250217/megatron/core/datasets'
+[rank2]:[W827 00:01:45.104883691 ProcessGroupNCCL.cpp:4115] [PG ID 0 PG GUID 0 Rank 2]  using GPU 2 to perform barrier as devices used by this process are currently unknown. This can potentially cause a hang if this rank to GPU mapping is incorrect.Specify device_ids in barrier() to force use of a particular device,or call init_process_group() with a device_id.
+[rank5]:[W827 00:01:45.105087710 ProcessGroupNCCL.cpp:4115] [PG ID 0 PG GUID 0 Rank 5]  using GPU 5 to perform barrier as devices used by this process are currently unknown. This can potentially cause a hang if this rank to GPU mapping is incorrect.Specify device_ids in barrier() to force use of a particular device,or call init_process_group() with a device_id.
+[rank6]:[W827 00:01:45.105088084 ProcessGroupNCCL.cpp:4115] [PG ID 0 PG GUID 0 Rank 6]  using GPU 6 to perform barrier as devices used by this process are currently unknown. This can potentially cause a hang if this rank to GPU mapping is incorrect.Specify device_ids in barrier() to force use of a particular device,or call init_process_group() with a device_id.
+[rank4]:[W827 00:01:45.105254633 ProcessGroupNCCL.cpp:4115] [PG ID 0 PG GUID 0 Rank 4]  using GPU 4 to perform barrier as devices used by this process are currently unknown. This can potentially cause a hang if this rank to GPU mapping is incorrect.Specify device_ids in barrier() to force use of a particular device,or call init_process_group() with a device_id.
+[rank3]:[W827 00:01:45.105309253 ProcessGroupNCCL.cpp:4115] [PG ID 0 PG GUID 0 Rank 3]  using GPU 3 to perform barrier as devices used by this process are currently unknown. This can potentially cause a hang if this rank to GPU mapping is incorrect.Specify device_ids in barrier() to force use of a particular device,or call init_process_group() with a device_id.
+[rank1]:[W827 00:01:45.105534854 ProcessGroupNCCL.cpp:4115] [PG ID 0 PG GUID 0 Rank 1]  using GPU 1 to perform barrier as devices used by this process are currently unknown. This can potentially cause a hang if this rank to GPU mapping is incorrect.Specify device_ids in barrier() to force use of a particular device,or call init_process_group() with a device_id.
+make: Nothing to be done for 'default'.
+make: Leaving directory '/home/ma-user/work/wza/Pai-Megatron-Patch/backends/megatron/Megatron-LM-250217/megatron/core/datasets'
+>>> done with dataset index builder. Compilation time: 0.071 seconds
+> compiling and loading fused kernels ...
+[rank0]:[W827 00:01:45.250009449 ProcessGroupNCCL.cpp:4115] [PG ID 0 PG GUID 0 Rank 0]  using GPU 0 to perform barrier as devices used by this process are currently unknown. This can potentially cause a hang if this rank to GPU mapping is incorrect.Specify device_ids in barrier() to force use of a particular device,or call init_process_group() with a device_id.
+>>> done with compiling and loading fused kernels. Compilation time: 1.451 seconds
+time to initialize megatron (seconds): 38.956
+[after megatron is initialized] datetime: 2025-08-27 00:02:00 
+> building Qwen2VLTokenizer tokenizer ...
+[WARNING  | megatron_patch.model.qwen2_vl.model]: Qwen2VL model is under development and may be missing features.
+[WARNING  | megatron_patch.model.qwen2_vl.model]: Qwen2VL model is under development and may be missing features.
+[WARNING  | megatron_patch.model.qwen2_vl.model]: Qwen2VL model is under development and may be missing features.
+[WARNING  | megatron_patch.model.qwen2_vl.model]: Qwen2VL model is under development and may be missing features.
+start building qwen2-vl model ...
+Multimodal RoPE currently not support RoPE interpolation, set to None...
+[WARNING  | megatron_patch.model.qwen2_vl.model]: Qwen2VL model is under development and may be missing features.
+building Qwen2-VL model in TE...
+[WARNING  | megatron_patch.model.qwen2_vl.model]: Qwen2VL model is under development and may be missing features.
+[WARNING  | megatron_patch.model.qwen2_vl.model]: Qwen2VL model is under development and may be missing features.
+[WARNING  | megatron_patch.model.qwen2_vl.model]: Qwen2VL model is under development and may be missing features.
+ > number of parameters on (tensor, pipeline) model parallel rank (0, 0): 2934960640
+ loading release checkpoint from /home/ma-user/work/wza/Model/Qwen2-VL-2B-Instruct-80E1S16A-mcore-ep8
+/home/ma-user/work/wza/Pai-Megatron-Patch/backends/megatron/Megatron-LM-250217/megatron/training/checkpointing.py:915: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  state_dict = torch.load(checkpoint_name, map_location='cpu')
+/home/ma-user/work/wza/Pai-Megatron-Patch/backends/megatron/Megatron-LM-250217/megatron/training/checkpointing.py:915: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  state_dict = torch.load(checkpoint_name, map_location='cpu')
+/home/ma-user/work/wza/Pai-Megatron-Patch/backends/megatron/Megatron-LM-250217/megatron/training/checkpointing.py:915: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  state_dict = torch.load(checkpoint_name, map_location='cpu')
+/home/ma-user/work/wza/Pai-Megatron-Patch/backends/megatron/Megatron-LM-250217/megatron/training/checkpointing.py:915: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  state_dict = torch.load(checkpoint_name, map_location='cpu')
+/home/ma-user/work/wza/Pai-Megatron-Patch/backends/megatron/Megatron-LM-250217/megatron/training/checkpointing.py:915: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  state_dict = torch.load(checkpoint_name, map_location='cpu')
+/home/ma-user/work/wza/Pai-Megatron-Patch/backends/megatron/Megatron-LM-250217/megatron/training/checkpointing.py:915: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  state_dict = torch.load(checkpoint_name, map_location='cpu')
+/home/ma-user/work/wza/Pai-Megatron-Patch/backends/megatron/Megatron-LM-250217/megatron/training/checkpointing.py:915: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  state_dict = torch.load(checkpoint_name, map_location='cpu')
+/home/ma-user/work/wza/Pai-Megatron-Patch/backends/megatron/Megatron-LM-250217/megatron/training/checkpointing.py:915: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  state_dict = torch.load(checkpoint_name, map_location='cpu')
+ checkpoint version 3.0
+  successfully loaded checkpoint from /home/ma-user/work/wza/Model/Qwen2-VL-2B-Instruct-80E1S16A-mcore-ep8 [ t 1/1, p 1/1 ] at iteration 0
+  failed to find checkpoint /home/ma-user/work/wza/Model/Qwen2-VL-2B-Instruct-80E1S16A-mcore-ep8/release/mp_rank_00_007/model_optim_rng.pt in wandb
+(min, max) time across ranks (ms):
+    load-checkpoint ................................: (38674.40, 38675.29)
+[after model, optimizer, and learning rate scheduler are built] datetime: 2025-08-27 00:02:41 
+> building train, validation, and test datasets ...
+ > datasets target sizes (minimum size):
+    train:      696192
+    validation: 7680
+    test:       1280
+rank=7, worker=0: shard_range=[pretrain-12.tar[4219, 4318), pretrain-12.tar[4318, 4418), pretrain-12.tar[4418, 4518), ...<101>, pretrain-58.tar[4639, 4740), pretrain-58.tar[4740, 4841), pretrain-58.tar[4841, 4942)] sum(count)=10723
+rank=1, worker=0: shard_range=[pretrain-44.tar[3492, 3592), pretrain-44.tar[3592, 3692), pretrain-44.tar[3692, 3792), ...<101>, pretrain-22.tar[3913, 4014), pretrain-22.tar[4014, 4114), pretrain-22.tar[4114, 4215)] sum(count)=10723
+rank=7, worker=1: shard_range=[pretrain-58.tar[4942, 5041), pretrain-58.tar[5041, 5140), pretrain-58.tar[5140, 5239), ...<102>, pretrain-19.tar[5366, 5466), pretrain-19.tar[5466, 5565), pretrain-19.tar[5565, 5665)] sum(count)=10723rank=4, worker=0: shard_range=[pretrain-14.tar[3726, 3825), pretrain-14.tar[3825, 3925), pretrain-14.tar[3925, 4024), ...<101>, pretrain-47.tar[4145, 4246), pretrain-47.tar[4246, 4347), pretrain-47.tar[4347, 4449)] sum(count)=10723
+rank=1, worker=1: shard_range=[pretrain-22.tar[4215, 4314), pretrain-22.tar[4314, 4414), pretrain-22.tar[4414, 4514), ...<102>, pretrain-6.tar[2263, 2362), pretrain-6.tar[2362, 2460), pretrain-6.tar[2460, 2559)] sum(count)=10723
+
+rank=6, worker=0: shard_range=[pretrain-2.tar[3323, 3422), pretrain-2.tar[3422, 3522), pretrain-2.tar[3522, 3621), ...<101>, pretrain-73.tar[3742, 3843), pretrain-73.tar[3843, 3944), pretrain-73.tar[3944, 4046)] sum(count)=10723rank=1, worker=2: shard_range=[pretrain-6.tar[2559, 2659), pretrain-6.tar[2659, 2760), pretrain-6.tar[2760, 2860), ...<101>, pretrain-36.tar[2983, 3083), pretrain-36.tar[3083, 3182), pretrain-36.tar[3182, 3282)] sum(count)=10723
+
+rank=0, worker=0: shard_range=[pretrain-68.tar[0, 99), pretrain-68.tar[99, 199), pretrain-68.tar[199, 298), ...<101>, pretrain-25.tar[8132, 8233), pretrain-25.tar[8233, 8333), pretrain-25.tar[8333, 8434)] sum(count)=10723
+rank=3, worker=0: shard_range=[pretrain-3.tar[344, 443), pretrain-3.tar[443, 543), pretrain-3.tar[543, 642), ...<102>, pretrain-60.tar[776, 873), pretrain-60.tar[873, 970), pretrain-60.tar[970, 1067)] sum(count)=10723rank=6, worker=1: shard_range=[pretrain-73.tar[4046, 4150), pretrain-73.tar[4150, 4255), pretrain-73.tar[4255, 4360), ...<101>, pretrain-1.tar[9584, 9684), pretrain-1.tar[9684, 9784), pretrain-1.tar[9784, 9884)] sum(count)=10723
+
+rank=2, worker=0: shard_range=[pretrain-69.tar[6894, 6994), pretrain-69.tar[6994, 7094), pretrain-69.tar[7094, 7194), ...<101>, pretrain-26.tar[7316, 7416), pretrain-26.tar[7416, 7516), pretrain-26.tar[7516, 7617)] sum(count)=10723rank=0, worker=1: shard_range=[pretrain-25.tar[8434, 8531), pretrain-25.tar[8531, 8629), pretrain-25.tar[8629, 8727), ...<102>, pretrain-41.tar[8858, 8957), pretrain-41.tar[8957, 9057), pretrain-41.tar[9057, 9157)] sum(count)=10723rank=6, worker=2: shard_range=[pretrain-1.tar[9884, 10000), pretrain-43.tar[0, 100), pretrain-43.tar[100, 200), ...<101>, pretrain-38.tar[303, 404), pretrain-38.tar[404, 505), pretrain-38.tar[505, 607)] sum(count)=10723
+
+rank=5, worker=0: shard_range=[pretrain-70.tar[7176, 7276), pretrain-70.tar[7276, 7377), pretrain-70.tar[7377, 7478), ...<101>, pretrain-42.tar[7599, 7699), pretrain-42.tar[7699, 7799), pretrain-42.tar[7799, 7899)] sum(count)=10723rank=3, worker=1: shard_range=[pretrain-60.tar[1067, 1167), pretrain-60.tar[1167, 1267), pretrain-60.tar[1267, 1368), ...<101>, pretrain-31.tar[1491, 1591), pretrain-31.tar[1591, 1690), pretrain-31.tar[1690, 1790)] sum(count)=10723
+rank=4, worker=1: shard_range=[pretrain-47.tar[4449, 4548), pretrain-47.tar[4548, 4647), pretrain-47.tar[4647, 4746), ...<101>, pretrain-17.tar[2536, 2638), pretrain-17.tar[2638, 2739), pretrain-17.tar[2739, 2841)] sum(count)=10723
+rank=1, worker=3: shard_range=[pretrain-36.tar[3282, 3382), pretrain-36.tar[3382, 3482), pretrain-36.tar[3482, 3582), ...<101>, pretrain-56.tar[3703, 3803), pretrain-56.tar[3803, 3903), pretrain-56.tar[3903, 4004)] sum(count)=10722rank=2, worker=1: shard_range=[pretrain-26.tar[7617, 7716), pretrain-26.tar[7716, 7815), pretrain-26.tar[7815, 7914), ...<101>, pretrain-27.tar[8038, 8139), pretrain-27.tar[8139, 8239), pretrain-27.tar[8239, 8340)] sum(count)=10723
+
+rank=7, worker=2: shard_range=[pretrain-19.tar[5665, 5765), pretrain-19.tar[5765, 5866), pretrain-19.tar[5866, 5967), ...<101>, pretrain-20.tar[6088, 6188), pretrain-20.tar[6188, 6288), pretrain-20.tar[6288, 6388)] sum(count)=10723rank=2, worker=2: shard_range=[pretrain-27.tar[8340, 8437), pretrain-27.tar[8437, 8535), pretrain-27.tar[8535, 8632), ...<102>, pretrain-45.tar[8764, 8863), pretrain-45.tar[8863, 8963), pretrain-45.tar[8963, 9063)] sum(count)=10723
+rank=6, worker=3: shard_range=[pretrain-38.tar[607, 706), pretrain-38.tar[706, 806), pretrain-38.tar[806, 906), ...<101>, pretrain-9.tar[1022, 1124), pretrain-9.tar[1124, 1226), pretrain-9.tar[1226, 1329)] sum(count)=10722
+rank=2, worker=3: shard_range=[pretrain-45.tar[9063, 9167), pretrain-45.tar[9167, 9271), pretrain-45.tar[9271, 9375), ...<101>, pretrain-54.tar[9485, 9585), pretrain-54.tar[9585, 9685), pretrain-54.tar[9685, 9785)] sum(count)=10722
+rank=0, worker=2: shard_range=[pretrain-41.tar[9157, 9262), pretrain-41.tar[9262, 9367), pretrain-41.tar[9367, 9473), ...<101>, pretrain-16.tar[9580, 9680), pretrain-16.tar[9680, 9780), pretrain-16.tar[9780, 9880)] sum(count)=10723
+rank=4, worker=2: shard_range=[pretrain-17.tar[2841, 2940), pretrain-17.tar[2940, 3039), pretrain-17.tar[3039, 3139), ...<102>, pretrain-50.tar[3267, 3366), pretrain-50.tar[3366, 3465), pretrain-50.tar[3465, 3564)] sum(count)=10723
+rank=1, worker=4: shard_range=[pretrain-56.tar[4004, 4103), pretrain-56.tar[4103, 4203), pretrain-56.tar[4203, 4303), ...<101>, pretrain-35.tar[4425, 4525), pretrain-35.tar[4525, 4626), pretrain-35.tar[4626, 4727)] sum(count)=10723
+rank=2, worker=4: shard_range=[pretrain-54.tar[9785, 9892), pretrain-54.tar[9892, 10000), pretrain-10.tar[0, 100), ...<101>, pretrain-59.tar[203, 304), pretrain-59.tar[304, 406), pretrain-59.tar[406, 508)] sum(count)=10723
+
+
+
+rank=6, worker=4: shard_range=[pretrain-9.tar[1329, 1428), pretrain-9.tar[1428, 1528), pretrain-9.tar[1528, 1628), ...<102>, pretrain-7.tar[1758, 1856), pretrain-7.tar[1856, 1954), pretrain-7.tar[1954, 2052)] sum(count)=10723
+rank=5, worker=1: shard_range=[pretrain-42.tar[7899, 7999), pretrain-42.tar[7999, 8099), pretrain-42.tar[8099, 8199), ...<101>, pretrain-71.tar[8321, 8421), pretrain-71.tar[8421, 8521), pretrain-71.tar[8521, 8622)] sum(count)=10723
+rank=2, worker=5: shard_range=[pretrain-59.tar[508, 607), pretrain-59.tar[607, 707), pretrain-59.tar[707, 807), ...<101>, pretrain-66.tar[922, 1025), pretrain-66.tar[1025, 1127), pretrain-66.tar[1127, 1230)] sum(count)=10722
+rank=5, worker=2: shard_range=[pretrain-71.tar[8622, 8720), pretrain-71.tar[8720, 8818), pretrain-71.tar[8818, 8917), ...<101>, pretrain-63.tar[9043, 9144), pretrain-63.tar[9144, 9244), pretrain-63.tar[9244, 9345)] sum(count)=10723
+rank=2, worker=6: shard_range=[pretrain-66.tar[1230, 1330), pretrain-66.tar[1330, 1430), pretrain-66.tar[1430, 1530), ...<101>, pretrain-57.tar[9321, 9421), pretrain-57.tar[9421, 9521), pretrain-57.tar[9521, 9622)] sum(count)=10723
+rank=3, worker=2: shard_range=[pretrain-31.tar[1790, 1890), pretrain-31.tar[1890, 1990), pretrain-31.tar[1990, 2090), ...<101>, pretrain-23.tar[2211, 2311), pretrain-23.tar[2311, 2412), pretrain-23.tar[2412, 2513)] sum(count)=10723rank=5, worker=3: shard_range=[pretrain-63.tar[9345, 9441), pretrain-63.tar[9441, 9537), pretrain-63.tar[9537, 9634), ...<101>, pretrain-4.tar[108, 216), pretrain-4.tar[216, 324), pretrain-4.tar[324, 433)] sum(count)=10722rank=0, worker=3: shard_range=[pretrain-16.tar[9880, 10000), pretrain-15.tar[0, 100), pretrain-15.tar[100, 200), ...<101>, pretrain-61.tar[301, 401), pretrain-61.tar[401, 501), pretrain-61.tar[501, 602)] sum(count)=10722
+
+rank=3, worker=3: shard_range=[pretrain-23.tar[2513, 2612), pretrain-23.tar[2612, 2712), pretrain-23.tar[2712, 2812), ...<101>, pretrain-39.tar[2931, 3032), pretrain-39.tar[3032, 3133), pretrain-39.tar[3133, 3235)] sum(count)=10722rank=2, worker=7: shard_range=[pretrain-57.tar[9622, 9716), pretrain-57.tar[9716, 9811), pretrain-57.tar[9811, 9905), ...<101>, pretrain-3.tar[0, 114), pretrain-3.tar[114, 229), pretrain-3.tar[229, 344)] sum(count)=10722
+
+rank=4, worker=3: shard_range=[pretrain-50.tar[3564, 3664), pretrain-50.tar[3664, 3765), pretrain-50.tar[3765, 3865), ...<101>, pretrain-28.tar[3986, 4086), pretrain-28.tar[4086, 4186), pretrain-28.tar[4186, 4286)] sum(count)=10722
+rank=1, worker=5: shard_range=[pretrain-35.tar[4727, 4826), pretrain-35.tar[4826, 4925), pretrain-35.tar[4925, 5025), ...<101>, pretrain-52.tar[5146, 5247), pretrain-52.tar[5247, 5348), pretrain-52.tar[5348, 5449)] sum(count)=10722rank=3, worker=4: shard_range=[pretrain-39.tar[3235, 3334), pretrain-39.tar[3334, 3433), pretrain-39.tar[3433, 3533), ...<102>, pretrain-29.tar[3661, 3760), pretrain-29.tar[3760, 3859), pretrain-29.tar[3859, 3958)] sum(count)=10723rank=5, worker=4: shard_range=[pretrain-4.tar[433, 532), pretrain-4.tar[532, 632), pretrain-4.tar[632, 731), ...<102>, pretrain-49.tar[867, 963), pretrain-49.tar[963, 1059), pretrain-49.tar[1059, 1156)] sum(count)=10723
+
+
+
+rank=4, worker=4: shard_range=[pretrain-28.tar[4286, 4386), pretrain-28.tar[4386, 4486), pretrain-28.tar[4486, 4586), ...<101>, pretrain-33.tar[4708, 4808), pretrain-33.tar[4808, 4908), pretrain-33.tar[4908, 5009)] sum(count)=10723rank=6, worker=5: shard_range=[pretrain-7.tar[2052, 2152), pretrain-7.tar[2152, 2253), pretrain-7.tar[2253, 2353), ...<101>, pretrain-13.tar[2476, 2575), pretrain-13.tar[2575, 2674), pretrain-13.tar[2674, 2774)] sum(count)=10722
+rank=7, worker=3: shard_range=[pretrain-20.tar[6388, 6488), pretrain-20.tar[6488, 6588), pretrain-20.tar[6588, 6689), ...<101>, pretrain-24.tar[6809, 6909), pretrain-24.tar[6909, 7009), pretrain-24.tar[7009, 7110)] sum(count)=10722
+
+rank=6, worker=6: shard_range=[pretrain-13.tar[2774, 2874), pretrain-13.tar[2874, 2974), pretrain-13.tar[2974, 3075), ...<101>, pretrain-8.tar[3197, 3297), pretrain-8.tar[3297, 3397), pretrain-8.tar[3397, 3497)] sum(count)=10723rank=1, worker=6: shard_range=[pretrain-52.tar[5449, 5547), pretrain-52.tar[5547, 5646), pretrain-52.tar[5646, 5745), ...<102>, pretrain-55.tar[5873, 5972), pretrain-55.tar[5972, 6072), pretrain-55.tar[6072, 6172)] sum(count)=10723
+
+rank=3, worker=5: shard_range=[pretrain-29.tar[3958, 4058), pretrain-29.tar[4058, 4159), pretrain-29.tar[4159, 4260), ...<101>, pretrain-51.tar[4381, 4480), pretrain-51.tar[4480, 4580), pretrain-51.tar[4580, 4680)] sum(count)=10722rank=4, worker=5: shard_range=[pretrain-33.tar[5009, 5108), pretrain-33.tar[5108, 5208), pretrain-33.tar[5208, 5308), ...<101>, pretrain-18.tar[5429, 5529), pretrain-18.tar[5529, 5630), pretrain-18.tar[5630, 5731)] sum(count)=10722
+
+rank=0, worker=4: shard_range=[pretrain-61.tar[602, 701), pretrain-61.tar[701, 801), pretrain-61.tar[801, 901), ...<101>, pretrain-72.tar[1019, 1121), pretrain-72.tar[1121, 1223), pretrain-72.tar[1223, 1325)] sum(count)=10723rank=6, worker=7: shard_range=[pretrain-8.tar[3497, 3597), pretrain-8.tar[3597, 3697), pretrain-8.tar[3697, 3797), ...<101>, pretrain-12.tar[3917, 4018), pretrain-12.tar[4018, 4118), pretrain-12.tar[4118, 4219)] sum(count)=10722
+rank=1, worker=7: shard_range=[pretrain-55.tar[6172, 6272), pretrain-55.tar[6272, 6373), pretrain-55.tar[6373, 6474), ...<101>, pretrain-69.tar[6594, 6694), pretrain-69.tar[6694, 6794), pretrain-69.tar[6794, 6894)] sum(count)=10722
+
+rank=5, worker=5: shard_range=[pretrain-49.tar[1156, 1256), pretrain-49.tar[1256, 1357), pretrain-49.tar[1357, 1457), ...<101>, pretrain-46.tar[1581, 1680), pretrain-46.tar[1680, 1779), pretrain-46.tar[1779, 1878)] sum(count)=10722rank=3, worker=6: shard_range=[pretrain-51.tar[4680, 4780), pretrain-51.tar[4780, 4880), pretrain-51.tar[4880, 4981), ...<101>, pretrain-30.tar[5102, 5202), pretrain-30.tar[5202, 5302), pretrain-30.tar[5302, 5403)] sum(count)=10723rank=4, worker=6: shard_range=[pretrain-18.tar[5731, 5830), pretrain-18.tar[5830, 5929), pretrain-18.tar[5929, 6028), ...<102>, pretrain-0.tar[6156, 6255), pretrain-0.tar[6255, 6354), pretrain-0.tar[6354, 6454)] sum(count)=10723
+
+rank=4, worker=7: shard_range=[pretrain-0.tar[6454, 6555), pretrain-0.tar[6555, 6656), pretrain-0.tar[6656, 6757), ...<101>, pretrain-70.tar[6877, 6976), pretrain-70.tar[6976, 7076), pretrain-70.tar[7076, 7176)] sum(count)=10722
+
+rank=0, worker=5: shard_range=[pretrain-72.tar[1325, 1424), pretrain-72.tar[1424, 1524), pretrain-72.tar[1524, 1624), ...<101>, pretrain-62.tar[1739, 1842), pretrain-62.tar[1842, 1944), pretrain-62.tar[1944, 2047)] sum(count)=10722rank=5, worker=6: shard_range=[pretrain-46.tar[1878, 1978), pretrain-46.tar[1978, 2078), pretrain-46.tar[2078, 2178), ...<101>, pretrain-5.tar[2300, 2400), pretrain-5.tar[2400, 2500), pretrain-5.tar[2500, 2601)] sum(count)=10723
+rank=7, worker=4: shard_range=[pretrain-24.tar[7110, 7209), pretrain-24.tar[7209, 7309), pretrain-24.tar[7309, 7408), ...<101>, pretrain-34.tar[7531, 7632), pretrain-34.tar[7632, 7732), pretrain-34.tar[7732, 7833)] sum(count)=10723
+rank=3, worker=7: shard_range=[pretrain-30.tar[5403, 5502), pretrain-30.tar[5502, 5602), pretrain-30.tar[5602, 5702), ...<101>, pretrain-14.tar[3423, 3524), pretrain-14.tar[3524, 3625), pretrain-14.tar[3625, 3726)] sum(count)=10722
+
+rank=0, worker=6: shard_range=[pretrain-62.tar[2047, 2146), pretrain-62.tar[2146, 2245), pretrain-62.tar[2245, 2345), ...<102>, pretrain-48.tar[2473, 2572), pretrain-48.tar[2572, 2671), pretrain-48.tar[2671, 2770)] sum(count)=10723
+rank=5, worker=7: shard_range=[pretrain-5.tar[2601, 2700), pretrain-5.tar[2700, 2800), pretrain-5.tar[2800, 2900), ...<101>, pretrain-2.tar[3020, 3121), pretrain-2.tar[3121, 3222), pretrain-2.tar[3222, 3323)] sum(count)=10722rank=0, worker=7: shard_range=[pretrain-48.tar[2770, 2870), pretrain-48.tar[2870, 2970), pretrain-48.tar[2970, 3071), ...<101>, pretrain-44.tar[3192, 3292), pretrain-44.tar[3292, 3392), pretrain-44.tar[3392, 3492)] sum(count)=10722
+
+rank=7, worker=5: shard_range=[pretrain-34.tar[7833, 7931), pretrain-34.tar[7931, 8030), pretrain-34.tar[8030, 8128), ...<102>, pretrain-37.tar[8256, 8356), pretrain-37.tar[8356, 8455), pretrain-37.tar[8455, 8555)] sum(count)=10722
+rank=7, worker=6: shard_range=[pretrain-37.tar[8555, 8658), pretrain-37.tar[8658, 8761), pretrain-37.tar[8761, 8864), ...<101>, pretrain-40.tar[8978, 9078), pretrain-40.tar[9078, 9178), pretrain-40.tar[9178, 9278)] sum(count)=10723
+rank=7, worker=7: shard_range=[pretrain-40.tar[9278, 9381), pretrain-40.tar[9381, 9484), pretrain-40.tar[9484, 9587), ...<101>, pretrain-11.tar[9700, 9800), pretrain-11.tar[9800, 9900), pretrain-11.tar[9900, 10000)] sum(count)=10722
+rank=2, worker=0: shard_range=[pretrain-21.tar[2500, 2657)] sum(count)=157
+rank=2, worker=1: shard_range=[pretrain-21.tar[2657, 2813)] sum(count)=156
+rank=2, worker=2: shard_range=[pretrain-21.tar[2813, 2969)] sum(count)=156
+rank=2, worker=3: shard_range=[pretrain-21.tar[2969, 3125)] sum(count)=156
+rank=2, worker=4: shard_range=[pretrain-21.tar[3125, 3282)] sum(count)=157
+rank=2, worker=5: shard_range=[pretrain-21.tar[3282, 3438)] sum(count)=156
+rank=2, worker=6: shard_range=[pretrain-21.tar[3438, 3594)] sum(count)=156
+rank=2, worker=7: shard_range=[pretrain-21.tar[3594, 3750)] sum(count)=156
+rank=6, worker=0: shard_range=[pretrain-21.tar[7500, 7657)] sum(count)=157
+rank=1, worker=0: shard_range=[pretrain-21.tar[1250, 1407)] sum(count)=157rank=6, worker=1: shard_range=[pretrain-21.tar[7657, 7813)] sum(count)=156
+
+rank=6, worker=2: shard_range=[pretrain-21.tar[7813, 7969)] sum(count)=156
+rank=1, worker=1: shard_range=[pretrain-21.tar[1407, 1563)] sum(count)=156
+rank=6, worker=3: shard_range=[pretrain-21.tar[7969, 8125)] sum(count)=156
+rank=1, worker=2: shard_range=[pretrain-21.tar[1563, 1719)] sum(count)=156
+rank=6, worker=4: shard_range=[pretrain-21.tar[8125, 8282)] sum(count)=157
+rank=1, worker=3: shard_range=[pretrain-21.tar[1719, 1875)] sum(count)=156rank=6, worker=5: shard_range=[pretrain-21.tar[8282, 8438)] sum(count)=156
+
+rank=4, worker=0: shard_range=[pretrain-21.tar[5000, 5157)] sum(count)=157rank=6, worker=6: shard_range=[pretrain-21.tar[8438, 8594)] sum(count)=156rank=1, worker=4: shard_range=[pretrain-21.tar[1875, 2032)] sum(count)=157
+
+
+rank=3, worker=0: shard_range=[pretrain-21.tar[3750, 3907)] sum(count)=157rank=6, worker=7: shard_range=[pretrain-21.tar[8594, 8750)] sum(count)=156rank=1, worker=5: shard_range=[pretrain-21.tar[2032, 2188)] sum(count)=156rank=4, worker=1: shard_range=[pretrain-21.tar[5157, 5313)] sum(count)=156
+
+
+rank=0, worker=0: shard_range=[pretrain-21.tar[0, 157)] sum(count)=157
+rank=1, worker=6: shard_range=[pretrain-21.tar[2188, 2344)] sum(count)=156rank=5, worker=0: shard_range=[pretrain-21.tar[6250, 6407)] sum(count)=157
+rank=4, worker=2: shard_range=[pretrain-21.tar[5313, 5469)] sum(count)=156rank=5, worker=1: shard_range=[pretrain-21.tar[6407, 6563)] sum(count)=156
+
+
+rank=5, worker=2: shard_range=[pretrain-21.tar[6563, 6719)] sum(count)=156rank=4, worker=3: shard_range=[pretrain-21.tar[5469, 5625)] sum(count)=156
+rank=3, worker=1: shard_range=[pretrain-21.tar[3907, 4063)] sum(count)=156
+rank=5, worker=3: shard_range=[pretrain-21.tar[6719, 6875)] sum(count)=156
+
+rank=0, worker=1: shard_range=[pretrain-21.tar[157, 313)] sum(count)=156rank=1, worker=7: shard_range=[pretrain-21.tar[2344, 2500)] sum(count)=156
+
+rank=4, worker=4: shard_range=[pretrain-21.tar[5625, 5782)] sum(count)=157rank=0, worker=2: shard_range=[pretrain-21.tar[313, 469)] sum(count)=156
+
+
+rank=4, worker=5: shard_range=[pretrain-21.tar[5782, 5938)] sum(count)=156rank=0, worker=3: shard_range=[pretrain-21.tar[469, 625)] sum(count)=156
+
+rank=5, worker=4: shard_range=[pretrain-21.tar[6875, 7032)] sum(count)=157rank=3, worker=2: shard_range=[pretrain-21.tar[4063, 4219)] sum(count)=156rank=4, worker=6: shard_range=[pretrain-21.tar[5938, 6094)] sum(count)=156rank=0, worker=4: shard_range=[pretrain-21.tar[625, 782)] sum(count)=157
+
+/home/ma-user/anaconda3/envs/megatron/lib/python3.12/site-packages/megatron/energon/loader.py:50: FutureWarning: Passing a worker_config to get_savable_loader() is deprecated and will have no effect.
+  warn_deprecated(
+
+
+/home/ma-user/anaconda3/envs/megatron/lib/python3.12/site-packages/megatron/energon/loader.py:50: FutureWarning: Passing a worker_config to get_savable_loader() is deprecated and will have no effect.
+  warn_deprecated(
+rank=0, worker=5: shard_range=[pretrain-21.tar[782, 938)] sum(count)=156
+rank=3, worker=3: shard_range=[pretrain-21.tar[4219, 4375)] sum(count)=156
+rank=5, worker=5: shard_range=[pretrain-21.tar[7032, 7188)] sum(count)=156rank=0, worker=6: shard_range=[pretrain-21.tar[938, 1094)] sum(count)=156
+
+rank=3, worker=4: shard_range=[pretrain-21.tar[4375, 4532)] sum(count)=157rank=4, worker=7: shard_range=[pretrain-21.tar[6094, 6250)] sum(count)=156rank=5, worker=6: shard_range=[pretrain-21.tar[7188, 7344)] sum(count)=156
+rank=0, worker=7: shard_range=[pretrain-21.tar[1094, 1250)] sum(count)=156
+rank=7, worker=0: shard_range=[pretrain-21.tar[8750, 8907)] sum(count)=157
+
+rank=5, worker=7: shard_range=[pretrain-21.tar[7344, 7500)] sum(count)=156rank=3, worker=5: shard_range=[pretrain-21.tar[4532, 4688)] sum(count)=156
+/home/ma-user/anaconda3/envs/megatron/lib/python3.12/site-packages/megatron/energon/loader.py:50: FutureWarning: Passing a worker_config to get_savable_loader() is deprecated and will have no effect.
+  warn_deprecated(
+
+
+rank=3, worker=6: shard_range=[pretrain-21.tar[4688, 4844)] sum(count)=156
+rank=3, worker=7: shard_range=[pretrain-21.tar[4844, 5000)] sum(count)=156
+rank=7, worker=1: shard_range=[pretrain-21.tar[8907, 9063)] sum(count)=156
+/home/ma-user/anaconda3/envs/megatron/lib/python3.12/site-packages/megatron/energon/loader.py:50: FutureWarning: Passing a worker_config to get_savable_loader() is deprecated and will have no effect.
+  warn_deprecated(
+/home/ma-user/anaconda3/envs/megatron/lib/python3.12/site-packages/megatron/energon/loader.py:50: FutureWarning: Passing a worker_config to get_savable_loader() is deprecated and will have no effect.
+  warn_deprecated(
+/home/ma-user/anaconda3/envs/megatron/lib/python3.12/site-packages/megatron/energon/loader.py:50: FutureWarning: Passing a worker_config to get_savable_loader() is deprecated and will have no effect.
+  warn_deprecated(
+/home/ma-user/anaconda3/envs/megatron/lib/python3.12/site-packages/megatron/energon/loader.py:50: FutureWarning: Passing a worker_config to get_savable_loader() is deprecated and will have no effect.
+  warn_deprecated(
+rank=7, worker=2: shard_range=[pretrain-21.tar[9063, 9219)] sum(count)=156
+rank=7, worker=3: shard_range=[pretrain-21.tar[9219, 9375)] sum(count)=156
+rank=7, worker=4: shard_range=[pretrain-21.tar[9375, 9532)] sum(count)=157
+rank=7, worker=5: shard_range=[pretrain-21.tar[9532, 9688)] sum(count)=156
+rank=7, worker=6: shard_range=[pretrain-21.tar[9688, 9844)] sum(count)=156
+rank=7, worker=7: shard_range=[pretrain-21.tar[9844, 10000)] sum(count)=156
+/home/ma-user/anaconda3/envs/megatron/lib/python3.12/site-packages/megatron/energon/loader.py:50: FutureWarning: Passing a worker_config to get_savable_loader() is deprecated and will have no effect.
+  warn_deprecated(
+/home/ma-user/anaconda3/envs/megatron/lib/python3.12/site-packages/megatron/energon/loader.py:85: FutureWarning: Passing a worker_config to get_loader() is deprecated and will have no effect.
+  warn_deprecated(
+/home/ma-user/anaconda3/envs/megatron/lib/python3.12/site-packages/megatron/energon/loader.py:85: FutureWarning: Passing a worker_config to get_loader() is deprecated and will have no effect.
+  warn_deprecated(
+/home/ma-user/anaconda3/envs/megatron/lib/python3.12/site-packages/megatron/energon/loader.py:85: FutureWarning: Passing a worker_config to get_loader() is deprecated and will have no effect.
+  warn_deprecated(
+/home/ma-user/anaconda3/envs/megatron/lib/python3.12/site-packages/megatron/energon/loader.py:85: FutureWarning: Passing a worker_config to get_loader() is deprecated and will have no effect.
+  warn_deprecated(
+/home/ma-user/anaconda3/envs/megatron/lib/python3.12/site-packages/megatron/energon/loader.py:85: FutureWarning: Passing a worker_config to get_loader() is deprecated and will have no effect.
+  warn_deprecated(
+/home/ma-user/anaconda3/envs/megatron/lib/python3.12/site-packages/megatron/energon/loader.py:85: FutureWarning: Passing a worker_config to get_loader() is deprecated and will have no effect.
+  warn_deprecated(
+/home/ma-user/anaconda3/envs/megatron/lib/python3.12/site-packages/megatron/energon/loader.py:85: FutureWarning: Passing a worker_config to get_loader() is deprecated and will have no effect.
+  warn_deprecated(
+/home/ma-user/anaconda3/envs/megatron/lib/python3.12/site-packages/megatron/energon/loader.py:85: FutureWarning: Passing a worker_config to get_loader() is deprecated and will have no effect.
+  warn_deprecated(
+[after dataloaders are built] datetime: 2025-08-27 00:02:41 
+done with setup ...
+(min, max) time across ranks (ms):
+    model-and-optimizer-setup ......................: (40664.73, 40667.93)
+    train/valid/test-data-iterators-setup ..........: (431.21, 441.98)training ...
+
+Setting rerun_state_machine.current_iteration to 0...
+[before the start of training step] datetime: 2025-08-27 00:02:41 
+/home/ma-user/work/wza/Pai-Megatron-Patch/backends/megatron/Megatron-LM-250217/megatron/core/transformer/moe/token_dispatcher.py:602: UserWarning: The use of `x.T` on tensors of dimension other than 2 to reverse their shape is deprecated and it will throw an error in a future release. Consider `x.mT` to transpose batches of matrices or `x.permute(*torch.arange(x.ndim - 1, -1, -1))` to reverse the dimensions of a tensor. (Triggered internally at ../aten/src/ATen/native/TensorShape.cpp:3683.)
+  self.num_global_tokens_per_local_expert.T.ravel(),
+/home/ma-user/work/wza/Pai-Megatron-Patch/backends/megatron/Megatron-LM-250217/megatron/core/transformer/moe/token_dispatcher.py:602: UserWarning: The use of `x.T` on tensors of dimension other than 2 to reverse their shape is deprecated and it will throw an error in a future release. Consider `x.mT` to transpose batches of matrices or `x.permute(*torch.arange(x.ndim - 1, -1, -1))` to reverse the dimensions of a tensor. (Triggered internally at ../aten/src/ATen/native/TensorShape.cpp:3683.)
+  self.num_global_tokens_per_local_expert.T.ravel(),
+/home/ma-user/work/wza/Pai-Megatron-Patch/backends/megatron/Megatron-LM-250217/megatron/core/transformer/moe/token_dispatcher.py:602: UserWarning: The use of `x.T` on tensors of dimension other than 2 to reverse their shape is deprecated and it will throw an error in a future release. Consider `x.mT` to transpose batches of matrices or `x.permute(*torch.arange(x.ndim - 1, -1, -1))` to reverse the dimensions of a tensor. (Triggered internally at ../aten/src/ATen/native/TensorShape.cpp:3683.)
+  self.num_global_tokens_per_local_expert.T.ravel(),
+/home/ma-user/work/wza/Pai-Megatron-Patch/backends/megatron/Megatron-LM-250217/megatron/core/transformer/moe/token_dispatcher.py:602: UserWarning: The use of `x.T` on tensors of dimension other than 2 to reverse their shape is deprecated and it will throw an error in a future release. Consider `x.mT` to transpose batches of matrices or `x.permute(*torch.arange(x.ndim - 1, -1, -1))` to reverse the dimensions of a tensor. (Triggered internally at ../aten/src/ATen/native/TensorShape.cpp:3683.)
+  self.num_global_tokens_per_local_expert.T.ravel(),
+/home/ma-user/work/wza/Pai-Megatron-Patch/backends/megatron/Megatron-LM-250217/megatron/core/transformer/moe/token_dispatcher.py:602: UserWarning: The use of `x.T` on tensors of dimension other than 2 to reverse their shape is deprecated and it will throw an error in a future release. Consider `x.mT` to transpose batches of matrices or `x.permute(*torch.arange(x.ndim - 1, -1, -1))` to reverse the dimensions of a tensor. (Triggered internally at ../aten/src/ATen/native/TensorShape.cpp:3683.)
+  self.num_global_tokens_per_local_expert.T.ravel(),
+/home/ma-user/work/wza/Pai-Megatron-Patch/backends/megatron/Megatron-LM-250217/megatron/core/transformer/moe/token_dispatcher.py:602: UserWarning: The use of `x.T` on tensors of dimension other than 2 to reverse their shape is deprecated and it will throw an error in a future release. Consider `x.mT` to transpose batches of matrices or `x.permute(*torch.arange(x.ndim - 1, -1, -1))` to reverse the dimensions of a tensor. (Triggered internally at ../aten/src/ATen/native/TensorShape.cpp:3683.)
+  self.num_global_tokens_per_local_expert.T.ravel(),
+/home/ma-user/work/wza/Pai-Megatron-Patch/backends/megatron/Megatron-LM-250217/megatron/core/transformer/moe/token_dispatcher.py:602: UserWarning: The use of `x.T` on tensors of dimension other than 2 to reverse their shape is deprecated and it will throw an error in a future release. Consider `x.mT` to transpose batches of matrices or `x.permute(*torch.arange(x.ndim - 1, -1, -1))` to reverse the dimensions of a tensor. (Triggered internally at ../aten/src/ATen/native/TensorShape.cpp:3683.)
+  self.num_global_tokens_per_local_expert.T.ravel(),
+/home/ma-user/work/wza/Pai-Megatron-Patch/backends/megatron/Megatron-LM-250217/megatron/core/transformer/moe/token_dispatcher.py:602: UserWarning: The use of `x.T` on tensors of dimension other than 2 to reverse their shape is deprecated and it will throw an error in a future release. Consider `x.mT` to transpose batches of matrices or `x.permute(*torch.arange(x.ndim - 1, -1, -1))` to reverse the dimensions of a tensor. (Triggered internally at ../aten/src/ATen/native/TensorShape.cpp:3683.)
+  self.num_global_tokens_per_local_expert.T.ravel(),
+Number of parameters in transformer layers in billions:  92.64
+Number of parameters in embedding layers in billions: 0.23
+Total number of parameters in billions: 92.87
+Number of parameters in most loaded shard in billions: 92.8721
+Theoretical memory footprints: weight and optimizer=664272.97 MB
+ [2025-08-27 00:03:06] iteration        1/    5439 | consumed samples:          128 | elapsed time per iteration (ms): 24217.3 | throughput per GPU (TFLOP/s/GPU): 331.1 | learning rate: 1.838235E-08 | global batch size:   128 | lm loss: 1.466167E+00 | load_balancing_loss: 1.229986E+00 | loss scale: 1.0 | grad norm: 21.066 | num zeros: 0 | number of skipped iterations:   0 | number of nan iterations:   0 |[Rank 0] (after 1 iterations) memory (MB) | allocated: 24828.052734375 | max allocated: 27272.0283203125 | reserved: 27870.0 | max reserved: 27870.0
+
+ [2025-08-27 00:03:11] iteration        2/    5439 | consumed samples:          256 | elapsed time per iteration (ms): 5963.2 | throughput per GPU (TFLOP/s/GPU): 1344.7 | learning rate: 3.676471E-08 | global batch size:   128 | lm loss: 1.403546E+00 | load_balancing_loss: 1.228575E+00 | loss scale: 1.0 | grad norm: 18.852 | num zeros: 0 | number of skipped iterations:   0 | number of nan iterations:   0 |
+ [2025-08-27 00:03:17] iteration        3/    5439 | consumed samples:          384 | elapsed time per iteration (ms): 5448.9 | throughput per GPU (TFLOP/s/GPU): 1471.6 | learning rate: 5.514706E-08 | global batch size:   128 | lm loss: 1.430238E+00 | load_balancing_loss: 1.222244E+00 | loss scale: 1.0 | grad norm: 24.121 | num zeros: 0 | number of skipped iterations:   0 | number of nan iterations:   0 |
+ [2025-08-27 00:03:22] iteration        4/    5439 | consumed samples:          512 | elapsed time per iteration (ms): 5265.9 | throughput per GPU (TFLOP/s/GPU): 1522.8 | learning rate: 7.352941E-08 | global batch size:   128 | lm loss: 1.527764E+00 | load_balancing_loss: 1.228852E+00 | loss scale: 1.0 | grad norm: 20.705 | num zeros: 0 | number of skipped iterations:   0 | number of nan iterations:   0 |
+ [2025-08-27 00:03:27] iteration        5/    5439 | consumed samples:          640 | elapsed time per iteration (ms): 4737.4 | throughput per GPU (TFLOP/s/GPU): 1692.6 | learning rate: 9.191177E-08 | global batch size:   128 | lm loss: 1.441408E+00 | load_balancing_loss: 1.229227E+00 | loss scale: 1.0 | grad norm: 22.914 | num zeros: 0 | number of skipped iterations:   0 | number of nan iterations:   0 |
+ [2025-08-27 00:03:33] iteration        6/    5439 | consumed samples:          768 | elapsed time per iteration (ms): 6094.7 | throughput per GPU (TFLOP/s/GPU): 1315.7 | learning rate: 1.102941E-07 | global batch size:   128 | lm loss: 1.388679E+00 | load_balancing_loss: 1.227793E+00 | loss scale: 1.0 | grad norm: 19.874 | num zeros: 0 | number of skipped iterations:   0 | number of nan iterations:   0 |
+ [2025-08-27 00:03:38] iteration        7/    5439 | consumed samples:          896 | elapsed time per iteration (ms): 4975.1 | throughput per GPU (TFLOP/s/GPU): 1611.8 | learning rate: 1.286765E-07 | global batch size:   128 | lm loss: 1.337545E+00 | load_balancing_loss: 1.224153E+00 | loss scale: 1.0 | grad norm: 18.823 | num zeros: 0 | number of skipped iterations:   0 | number of nan iterations:   0 |
+ [2025-08-27 00:03:44] iteration        8/    5439 | consumed samples:         1024 | elapsed time per iteration (ms): 5919.7 | throughput per GPU (TFLOP/s/GPU): 1354.6 | learning rate: 1.470588E-07 | global batch size:   128 | lm loss: 1.518690E+00 | load_balancing_loss: 1.222432E+00 | loss scale: 1.0 | grad norm: 23.984 | num zeros: 0 | number of skipped iterations:   0 | number of nan iterations:   0 |
+ [2025-08-27 00:03:49] iteration        9/    5439 | consumed samples:         1152 | elapsed time per iteration (ms): 5188.6 | throughput per GPU (TFLOP/s/GPU): 1545.5 | learning rate: 1.654412E-07 | global batch size:   128 | lm loss: 1.437238E+00 | load_balancing_loss: 1.230361E+00 | loss scale: 1.0 | grad norm: 22.822 | num zeros: 0 | number of skipped iterations:   0 | number of nan iterations:   0 |
+ [2025-08-27 00:03:54] iteration       10/    5439 | consumed samples:         1280 | elapsed time per iteration (ms): 4880.4 | throughput per GPU (TFLOP/s/GPU): 1643.1 | learning rate: 1.838235E-07 | global batch size:   128 | lm loss: 1.383040E+00 | load_balancing_loss: 1.228296E+00 | loss scale: 1.0 | grad norm: 16.891 | num zeros: 0 | number of skipped iterations:   0 | number of nan iterations:   0 |
+ [2025-08-27 00:03:59] iteration       11/    5439 | consumed samples:         1408 | elapsed time per iteration (ms): 4844.9 | throughput per GPU (TFLOP/s/GPU): 1655.1 | learning rate: 2.022059E-07 | global batch size:   128 | lm loss: 1.395447E+00 | load_balancing_loss: 1.226885E+00 | loss scale: 1.0 | grad norm: 30.211 | num zeros: 0 | number of skipped iterations:   0 | number of nan iterations:   0 |
+ [2025-08-27 00:04:04] iteration       12/    5439 | consumed samples:         1536 | elapsed time per iteration (ms): 4838.9 | throughput per GPU (TFLOP/s/GPU): 1657.2 | learning rate: 2.205882E-07 | global batch size:   128 | lm loss: 1.513389E+00 | load_balancing_loss: 1.231717E+00 | loss scale: 1.0 | grad norm: 22.215 | num zeros: 0 | number of skipped iterations:   0 | number of nan iterations:   0 |
+ [2025-08-27 00:04:08] iteration       13/    5439 | consumed samples:         1664 | elapsed time per iteration (ms): 4794.3 | throughput per GPU (TFLOP/s/GPU): 1672.6 | learning rate: 2.389706E-07 | global batch size:   128 | lm loss: 1.453231E+00 | load_balancing_loss: 1.230604E+00 | loss scale: 1.0 | grad norm: 22.831 | num zeros: 0 | number of skipped iterations:   0 | number of nan iterations:   0 |
+ [2025-08-27 00:04:13] iteration       14/    5439 | consumed samples:         1792 | elapsed time per iteration (ms): 4759.9 | throughput per GPU (TFLOP/s/GPU): 1684.7 | learning rate: 2.573530E-07 | global batch size:   128 | lm loss: 1.384273E+00 | load_balancing_loss: 1.227901E+00 | loss scale: 1.0 | grad norm: 19.289 | num zeros: 0 | number of skipped iterations:   0 | number of nan iterations:   0 |
+ [2025-08-27 00:04:18] iteration       15/    5439 | consumed samples:         1920 | elapsed time per iteration (ms): 4783.7 | throughput per GPU (TFLOP/s/GPU): 1676.3 | learning rate: 2.757353E-07 | global batch size:   128 | lm loss: 1.495174E+00 | load_balancing_loss: 1.229235E+00 | loss scale: 1.0 | grad norm: 19.913 | num zeros: 0 | number of skipped iterations:   0 | number of nan iterations:   0 |
+ [2025-08-27 00:04:23] iteration       16/    5439 | consumed samples:         2048 | elapsed time per iteration (ms): 4715.9 | throughput per GPU (TFLOP/s/GPU): 1700.4 | learning rate: 2.941177E-07 | global batch size:   128 | lm loss: 1.513515E+00 | load_balancing_loss: 1.228646E+00 | loss scale: 1.0 | grad norm: 22.371 | num zeros: 0 | number of skipped iterations:   0 | number of nan iterations:   0 |
+ [2025-08-27 00:04:27] iteration       17/    5439 | consumed samples:         2176 | elapsed time per iteration (ms): 4632.2 | throughput per GPU (TFLOP/s/GPU): 1731.1 | learning rate: 3.125000E-07 | global batch size:   128 | lm loss: 1.364862E+00 | load_balancing_loss: 1.231198E+00 | loss scale: 1.0 | grad norm: 24.417 | num zeros: 0 | number of skipped iterations:   0 | number of nan iterations:   0 |
+ [2025-08-27 00:04:33] iteration       18/    5439 | consumed samples:         2304 | elapsed time per iteration (ms): 5969.2 | throughput per GPU (TFLOP/s/GPU): 1343.4 | learning rate: 3.308824E-07 | global batch size:   128 | lm loss: 1.430840E+00 | load_balancing_loss: 1.229264E+00 | loss scale: 1.0 | grad norm: 23.624 | num zeros: 0 | number of skipped iterations:   0 | number of nan iterations:   0 |
+ [2025-08-27 00:04:38] iteration       19/    5439 | consumed samples:         2432 | elapsed time per iteration (ms): 4886.5 | throughput per GPU (TFLOP/s/GPU): 1641.0 | learning rate: 3.492647E-07 | global batch size:   128 | lm loss: 1.473401E+00 | load_balancing_loss: 1.234172E+00 | loss scale: 1.0 | grad norm: 28.520 | num zeros: 0 | number of skipped iterations:   0 | number of nan iterations:   0 |
+ [2025-08-27 00:04:43] iteration       20/    5439 | consumed samples:         2560 | elapsed time per iteration (ms): 4585.6 | throughput per GPU (TFLOP/s/GPU): 1748.7 | learning rate: 3.676471E-07 | global batch size:   128 | lm loss: 1.453772E+00 | load_balancing_loss: 1.225606E+00 | loss scale: 1.0 | grad norm: 17.733 | num zeros: 0 | number of skipped iterations:   0 | number of nan iterations:   0 |
+ [2025-08-27 00:04:47] iteration       21/    5439 | consumed samples:         2688 | elapsed time per iteration (ms): 4675.8 | throughput per GPU (TFLOP/s/GPU): 1714.9 | learning rate: 3.860294E-07 | global batch size:   128 | lm loss: 1.459080E+00 | load_balancing_loss: 1.227341E+00 | loss scale: 1.0 | grad norm: 21.654 | num zeros: 0 | number of skipped iterations:   0 | number of nan iterations:   0 |
+ [2025-08-27 00:04:52] iteration       22/    5439 | consumed samples:         2816 | elapsed time per iteration (ms): 4691.4 | throughput per GPU (TFLOP/s/GPU): 1709.3 | learning rate: 4.044118E-07 | global batch size:   128 | lm loss: 1.412153E+00 | load_balancing_loss: 1.229894E+00 | loss scale: 1.0 | grad norm: 22.189 | num zeros: 0 | number of skipped iterations:   0 | number of nan iterations:   0 |
+ [2025-08-27 00:04:57] iteration       23/    5439 | consumed samples:         2944 | elapsed time per iteration (ms): 4804.6 | throughput per GPU (TFLOP/s/GPU): 1669.0 | learning rate: 4.227941E-07 | global batch size:   128 | lm loss: 1.509406E+00 | load_balancing_loss: 1.224059E+00 | loss scale: 1.0 | grad norm: 21.292 | num zeros: 0 | number of skipped iterations:   0 | number of nan iterations:   0 |
+ [2025-08-27 00:05:02] iteration       24/    5439 | consumed samples:         3072 | elapsed time per iteration (ms): 4694.4 | throughput per GPU (TFLOP/s/GPU): 1708.2 | learning rate: 4.411765E-07 | global batch size:   128 | lm loss: 1.515815E+00 | load_balancing_loss: 1.224473E+00 | loss scale: 1.0 | grad norm: 16.969 | num zeros: 0 | number of skipped iterations:   0 | number of nan iterations:   0 |
+ [2025-08-27 00:05:06] iteration       25/    5439 | consumed samples:         3200 | elapsed time per iteration (ms): 4685.8 | throughput per GPU (TFLOP/s/GPU): 1711.3 | learning rate: 4.595588E-07 | global batch size:   128 | lm loss: 1.362389E+00 | load_balancing_loss: 1.233440E+00 | loss scale: 1.0 | grad norm: 23.896 | num zeros: 0 | number of skipped iterations:   0 | number of nan iterations:   0 |
+ [2025-08-27 00:05:11] iteration       26/    5439 | consumed samples:         3328 | elapsed time per iteration (ms): 4622.7 | throughput per GPU (TFLOP/s/GPU): 1734.6 | learning rate: 4.779412E-07 | global batch size:   128 | lm loss: 1.471339E+00 | load_balancing_loss: 1.231415E+00 | loss scale: 1.0 | grad norm: 19.866 | num zeros: 0 | number of skipped iterations:   0 | number of nan iterations:   0 |
+ [2025-08-27 00:05:16] iteration       27/    5439 | consumed samples:         3456 | elapsed time per iteration (ms): 4685.1 | throughput per GPU (TFLOP/s/GPU): 1711.5 | learning rate: 4.963235E-07 | global batch size:   128 | lm loss: 1.433091E+00 | load_balancing_loss: 1.228094E+00 | loss scale: 1.0 | grad norm: 26.598 | num zeros: 0 | number of skipped iterations:   0 | number of nan iterations:   0 |
+ [2025-08-27 00:05:21] iteration       28/    5439 | consumed samples:         3584 | elapsed time per iteration (ms): 5188.5 | throughput per GPU (TFLOP/s/GPU): 1545.5 | learning rate: 5.147059E-07 | global batch size:   128 | lm loss: 1.512040E+00 | load_balancing_loss: 1.225358E+00 | loss scale: 1.0 | grad norm: 24.185 | num zeros: 0 | number of skipped iterations:   0 | number of nan iterations:   0 |
+ [2025-08-27 00:05:26] iteration       29/    5439 | consumed samples:         3712 | elapsed time per iteration (ms): 5360.7 | throughput per GPU (TFLOP/s/GPU): 1495.8 | learning rate: 5.330882E-07 | global batch size:   128 | lm loss: 1.507884E+00 | load_balancing_loss: 1.223897E+00 | loss scale: 1.0 | grad norm: 18.302 | num zeros: 0 | number of skipped iterations:   0 | number of nan iterations:   0 |
+ [2025-08-27 00:05:31] iteration       30/    5439 | consumed samples:         3840 | elapsed time per iteration (ms): 4868.9 | throughput per GPU (TFLOP/s/GPU): 1646.9 | learning rate: 5.514706E-07 | global batch size:   128 | lm loss: 1.508353E+00 | load_balancing_loss: 1.230540E+00 | loss scale: 1.0 | grad norm: 17.921 | num zeros: 0 | number of skipped iterations:   0 | number of nan iterations:   0 |
+ [2025-08-27 00:05:36] iteration       31/    5439 | consumed samples:         3968 | elapsed time per iteration (ms): 4976.6 | throughput per GPU (TFLOP/s/GPU): 1611.3 | learning rate: 5.698529E-07 | global batch size:   128 | lm loss: 1.490325E+00 | load_balancing_loss: 1.237953E+00 | loss scale: 1.0 | grad norm: 24.323 | num zeros: 0 | number of skipped iterations:   0 | number of nan iterations:   0 |
+ [2025-08-27 00:05:41] iteration       32/    5439 | consumed samples:         4096 | elapsed time per iteration (ms): 4714.3 | throughput per GPU (TFLOP/s/GPU): 1700.9 | learning rate: 5.882353E-07 | global batch size:   128 | lm loss: 1.345201E+00 | load_balancing_loss: 1.230598E+00 | loss scale: 1.0 | grad norm: 14.808 | num zeros: 0 | number of skipped iterations:   0 | number of nan iterations:   0 |
+ [2025-08-27 00:05:46] iteration       33/    5439 | consumed samples:         4224 | elapsed time per iteration (ms): 4784.6 | throughput per GPU (TFLOP/s/GPU): 1676.0 | learning rate: 6.066177E-07 | global batch size:   128 | lm loss: 1.401929E+00 | load_balancing_loss: 1.228913E+00 | loss scale: 1.0 | grad norm: 14.223 | num zeros: 0 | number of skipped iterations:   0 | number of nan iterations:   0 |
+ [2025-08-27 00:05:50] iteration       34/    5439 | consumed samples:         4352 | elapsed time per iteration (ms): 4714.7 | throughput per GPU (TFLOP/s/GPU): 1700.8 | learning rate: 6.250000E-07 | global batch size:   128 | lm loss: 1.324453E+00 | load_balancing_loss: 1.237272E+00 | loss scale: 1.0 | grad norm: 13.508 | num zeros: 0 | number of skipped iterations:   0 | number of nan iterations:   0 |
+ [2025-08-27 00:05:55] iteration       35/    5439 | consumed samples:         4480 | elapsed time per iteration (ms): 4691.7 | throughput per GPU (TFLOP/s/GPU): 1709.1 | learning rate: 6.433824E-07 | global batch size:   128 | lm loss: 1.324942E+00 | load_balancing_loss: 1.228172E+00 | loss scale: 1.0 | grad norm: 24.051 | num zeros: 0 | number of skipped iterations:   0 | number of nan iterations:   0 |
+ [2025-08-27 00:06:00] iteration       36/    5439 | consumed samples:         4608 | elapsed time per iteration (ms): 4838.9 | throughput per GPU (TFLOP/s/GPU): 1657.2 | learning rate: 6.617647E-07 | global batch size:   128 | lm loss: 1.340038E+00 | load_balancing_loss: 1.235839E+00 | loss scale: 1.0 | grad norm: 18.514 | num zeros: 0 | number of skipped iterations:   0 | number of nan iterations:   0 |
+ [2025-08-27 00:06:05] iteration       37/    5439 | consumed samples:         4736 | elapsed time per iteration (ms): 4707.1 | throughput per GPU (TFLOP/s/GPU): 1703.5 | learning rate: 6.801471E-07 | global batch size:   128 | lm loss: 1.335940E+00 | load_balancing_loss: 1.229711E+00 | loss scale: 1.0 | grad norm: 15.361 | num zeros: 0 | number of skipped iterations:   0 | number of nan iterations:   0 |
+ [2025-08-27 00:06:09] iteration       38/    5439 | consumed samples:         4864 | elapsed time per iteration (ms): 4871.2 | throughput per GPU (TFLOP/s/GPU): 1646.1 | learning rate: 6.985294E-07 | global batch size:   128 | lm loss: 1.502866E+00 | load_balancing_loss: 1.235229E+00 | loss scale: 1.0 | grad norm: 22.945 | num zeros: 0 | number of skipped iterations:   0 | number of nan iterations:   0 |
+ [2025-08-27 00:06:14] iteration       39/    5439 | consumed samples:         4992 | elapsed time per iteration (ms): 4864.6 | throughput per GPU (TFLOP/s/GPU): 1648.4 | learning rate: 7.169118E-07 | global batch size:   128 | lm loss: 1.483659E+00 | load_balancing_loss: 1.221988E+00 | loss scale: 1.0 | grad norm: 13.640 | num zeros: 0 | number of skipped iterations:   0 | number of nan iterations:   0 |
+ [2025-08-27 00:06:19] iteration       40/    5439 | consumed samples:         5120 | elapsed time per iteration (ms): 5037.5 | throughput per GPU (TFLOP/s/GPU): 1591.8 | learning rate: 7.352941E-07 | global batch size:   128 | lm loss: 1.249249E+00 | load_balancing_loss: 1.222668E+00 | loss scale: 1.0 | grad norm: 20.556 | num zeros: 0 | number of skipped iterations:   0 | number of nan iterations:   0 |
+ [2025-08-27 00:06:24] iteration       41/    5439 | consumed samples:         5248 | elapsed time per iteration (ms): 4912.8 | throughput per GPU (TFLOP/s/GPU): 1632.2 | learning rate: 7.536765E-07 | global batch size:   128 | lm loss: 1.303491E+00 | load_balancing_loss: 1.230625E+00 | loss scale: 1.0 | grad norm: 11.071 | num zeros: 0 | number of skipped iterations:   0 | number of nan iterations:   0 |
+ [2025-08-27 00:06:29] iteration       42/    5439 | consumed samples:         5376 | elapsed time per iteration (ms): 4849.5 | throughput per GPU (TFLOP/s/GPU): 1653.5 | learning rate: 7.720588E-07 | global batch size:   128 | lm loss: 1.382456E+00 | load_balancing_loss: 1.227933E+00 | loss scale: 1.0 | grad norm: 11.494 | num zeros: 0 | number of skipped iterations:   0 | number of nan iterations:   0 |
+ [2025-08-27 00:06:34] iteration       43/    5439 | consumed samples:         5504 | elapsed time per iteration (ms): 5031.5 | throughput per GPU (TFLOP/s/GPU): 1593.7 | learning rate: 7.904412E-07 | global batch size:   128 | lm loss: 1.401891E+00 | load_balancing_loss: 1.228414E+00 | loss scale: 1.0 | grad norm: 15.263 | num zeros: 0 | number of skipped iterations:   0 | number of nan iterations:   0 |
+ [2025-08-27 00:06:39] iteration       44/    5439 | consumed samples:         5632 | elapsed time per iteration (ms): 4762.4 | throughput per GPU (TFLOP/s/GPU): 1683.8 | learning rate: 8.088235E-07 | global batch size:   128 | lm loss: 1.332901E+00 | load_balancing_loss: 1.234695E+00 | loss scale: 1.0 | grad norm: 9.063 | num zeros: 0 | number of skipped iterations:   0 | number of nan iterations:   0 |
+ [2025-08-27 00:06:44] iteration       45/    5439 | consumed samples:         5760 | elapsed time per iteration (ms): 4709.4 | throughput per GPU (TFLOP/s/GPU): 1702.7 | learning rate: 8.272059E-07 | global batch size:   128 | lm loss: 1.377442E+00 | load_balancing_loss: 1.232360E+00 | loss scale: 1.0 | grad norm: 8.860 | num zeros: 0 | number of skipped iterations:   0 | number of nan iterations:   0 |
+ [2025-08-27 00:06:49] iteration       46/    5439 | consumed samples:         5888 | elapsed time per iteration (ms): 5328.5 | throughput per GPU (TFLOP/s/GPU): 1504.9 | learning rate: 8.455883E-07 | global batch size:   128 | lm loss: 1.417324E+00 | load_balancing_loss: 1.229200E+00 | loss scale: 1.0 | grad norm: 8.987 | num zeros: 0 | number of skipped iterations:   0 | number of nan iterations:   0 |
+ [2025-08-27 00:06:54] iteration       47/    5439 | consumed samples:         6016 | elapsed time per iteration (ms): 4820.4 | throughput per GPU (TFLOP/s/GPU): 1663.5 | learning rate: 8.639706E-07 | global batch size:   128 | lm loss: 1.257660E+00 | load_balancing_loss: 1.225415E+00 | loss scale: 1.0 | grad norm: 11.750 | num zeros: 0 | number of skipped iterations:   0 | number of nan iterations:   0 |
+ [2025-08-27 00:06:58] iteration       48/    5439 | consumed samples:         6144 | elapsed time per iteration (ms): 4690.0 | throughput per GPU (TFLOP/s/GPU): 1709.8 | learning rate: 8.823529E-07 | global batch size:   128 | lm loss: 1.227454E+00 | load_balancing_loss: 1.222865E+00 | loss scale: 1.0 | grad norm: 7.625 | num zeros: 0 | number of skipped iterations:   0 | number of nan iterations:   0 |
+ [2025-08-27 00:07:03] iteration       49/    5439 | consumed samples:         6272 | elapsed time per iteration (ms): 4671.1 | throughput per GPU (TFLOP/s/GPU): 1716.7 | learning rate: 9.007353E-07 | global batch size:   128 | lm loss: 1.316492E+00 | load_balancing_loss: 1.226770E+00 | loss scale: 1.0 | grad norm: 7.366 | num zeros: 0 | number of skipped iterations:   0 | number of nan iterations:   0 |
+ [2025-08-27 00:07:08] iteration       50/    5439 | consumed samples:         6400 | elapsed time per iteration (ms): 5273.6 | throughput per GPU (TFLOP/s/GPU): 1520.5 | learning rate: 9.191177E-07 | global batch size:   128 | lm loss: 1.288429E+00 | load_balancing_loss: 1.223961E+00 | loss scale: 1.0 | grad norm: 8.985 | num zeros: 0 | number of skipped iterations:   0 | number of nan iterations:   0 |
+ [2025-08-27 00:07:14] iteration       51/    5439 | consumed samples:         6528 | elapsed time per iteration (ms): 5215.2 | throughput per GPU (TFLOP/s/GPU): 1537.6 | learning rate: 9.375000E-07 | global batch size:   128 | lm loss: 1.281594E+00 | load_balancing_loss: 1.221030E+00 | loss scale: 1.0 | grad norm: 11.268 | num zeros: 0 | number of skipped iterations:   0 | number of nan iterations:   0 |
+ [2025-08-27 00:07:18] iteration       52/    5439 | consumed samples:         6656 | elapsed time per iteration (ms): 4838.5 | throughput per GPU (TFLOP/s/GPU): 1657.3 | learning rate: 9.558823E-07 | global batch size:   128 | lm loss: 1.354207E+00 | load_balancing_loss: 1.222937E+00 | loss scale: 1.0 | grad norm: 8.645 | num zeros: 0 | number of skipped iterations:   0 | number of nan iterations:   0 |
+ [2025-08-27 00:07:23] iteration       53/    5439 | consumed samples:         6784 | elapsed time per iteration (ms): 4910.3 | throughput per GPU (TFLOP/s/GPU): 1633.0 | learning rate: 9.742647E-07 | global batch size:   128 | lm loss: 1.345604E+00 | load_balancing_loss: 1.225590E+00 | loss scale: 1.0 | grad norm: 7.740 | num zeros: 0 | number of skipped iterations:   0 | number of nan iterations:   0 |
+ [2025-08-27 00:07:28] iteration       54/    5439 | consumed samples:         6912 | elapsed time per iteration (ms): 4581.6 | throughput per GPU (TFLOP/s/GPU): 1750.2 | learning rate: 9.926471E-07 | global batch size:   128 | lm loss: 1.253176E+00 | load_balancing_loss: 1.229497E+00 | loss scale: 1.0 | grad norm: 10.495 | num zeros: 0 | number of skipped iterations:   0 | number of nan iterations:   0 |
+ [2025-08-27 00:07:33] iteration       55/    5439 | consumed samples:         7040 | elapsed time per iteration (ms): 4744.8 | throughput per GPU (TFLOP/s/GPU): 1690.0 | learning rate: 1.011029E-06 | global batch size:   128 | lm loss: 1.177566E+00 | load_balancing_loss: 1.217857E+00 | loss scale: 1.0 | grad norm: 8.712 | num zeros: 0 | number of skipped iterations:   0 | number of nan iterations:   0 |
+ [2025-08-27 00:07:37] iteration       56/    5439 | consumed samples:         7168 | elapsed time per iteration (ms): 4711.2 | throughput per GPU (TFLOP/s/GPU): 1702.1 | learning rate: 1.029412E-06 | global batch size:   128 | lm loss: 1.300846E+00 | load_balancing_loss: 1.221514E+00 | loss scale: 1.0 | grad norm: 6.617 | num zeros: 0 | number of skipped iterations:   0 | number of nan iterations:   0 |
+ [2025-08-27 00:07:42] iteration       57/    5439 | consumed samples:         7296 | elapsed time per iteration (ms): 4751.4 | throughput per GPU (TFLOP/s/GPU): 1687.7 | learning rate: 1.047794E-06 | global batch size:   128 | lm loss: 1.240551E+00 | load_balancing_loss: 1.228651E+00 | loss scale: 1.0 | grad norm: 7.445 | num zeros: 0 | number of skipped iterations:   0 | number of nan iterations:   0 |
+ [2025-08-27 00:07:47] iteration       58/    5439 | consumed samples:         7424 | elapsed time per iteration (ms): 4986.8 | throughput per GPU (TFLOP/s/GPU): 1608.0 | learning rate: 1.066176E-06 | global batch size:   128 | lm loss: 1.231478E+00 | load_balancing_loss: 1.226057E+00 | loss scale: 1.0 | grad norm: 8.353 | num zeros: 0 | number of skipped iterations:   0 | number of nan iterations:   0 |
+ [2025-08-27 00:07:52] iteration       59/    5439 | consumed samples:         7552 | elapsed time per iteration (ms): 4813.3 | throughput per GPU (TFLOP/s/GPU): 1666.0 | learning rate: 1.084559E-06 | global batch size:   128 | lm loss: 1.306743E+00 | load_balancing_loss: 1.222281E+00 | loss scale: 1.0 | grad norm: 6.465 | num zeros: 0 | number of skipped iterations:   0 | number of nan iterations:   0 |
+ [2025-08-27 00:07:57] iteration       60/    5439 | consumed samples:         7680 | elapsed time per iteration (ms): 5032.4 | throughput per GPU (TFLOP/s/GPU): 1593.4 | learning rate: 1.102941E-06 | global batch size:   128 | lm loss: 1.246746E+00 | load_balancing_loss: 1.230719E+00 | loss scale: 1.0 | grad norm: 8.672 | num zeros: 0 | number of skipped iterations:   0 | number of nan iterations:   0 |
+ [2025-08-27 00:08:02] iteration       61/    5439 | consumed samples:         7808 | elapsed time per iteration (ms): 5229.6 | throughput per GPU (TFLOP/s/GPU): 1533.3 | learning rate: 1.121324E-06 | global batch size:   128 | lm loss: 1.307365E+00 | load_balancing_loss: 1.227873E+00 | loss scale: 1.0 | grad norm: 7.416 | num zeros: 0 | number of skipped iterations:   0 | number of nan iterations:   0 |
+ [2025-08-27 00:08:07] iteration       62/    5439 | consumed samples:         7936 | elapsed time per iteration (ms): 4851.2 | throughput per GPU (TFLOP/s/GPU): 1653.0 | learning rate: 1.139706E-06 | global batch size:   128 | lm loss: 1.183057E+00 | load_balancing_loss: 1.227191E+00 | loss scale: 1.0 | grad norm: 6.502 | num zeros: 0 | number of skipped iterations:   0 | number of nan iterations:   0 |
+ [2025-08-27 00:08:12] iteration       63/    5439 | consumed samples:         8064 | elapsed time per iteration (ms): 4706.8 | throughput per GPU (TFLOP/s/GPU): 1703.7 | learning rate: 1.158088E-06 | global batch size:   128 | lm loss: 1.279643E+00 | load_balancing_loss: 1.221839E+00 | loss scale: 1.0 | grad norm: 6.298 | num zeros: 0 | number of skipped iterations:   0 | number of nan iterations:   0 |
+ [2025-08-27 00:08:16] iteration       64/    5439 | consumed samples:         8192 | elapsed time per iteration (ms): 4673.8 | throughput per GPU (TFLOP/s/GPU): 1715.7 | learning rate: 1.176471E-06 | global batch size:   128 | lm loss: 1.152134E+00 | load_balancing_loss: 1.223348E+00 | loss scale: 1.0 | grad norm: 7.637 | num zeros: 0 | number of skipped iterations:   0 | number of nan iterations:   0 |
+ [2025-08-27 00:08:21] iteration       65/    5439 | consumed samples:         8320 | elapsed time per iteration (ms): 4902.8 | throughput per GPU (TFLOP/s/GPU): 1635.6 | learning rate: 1.194853E-06 | global batch size:   128 | lm loss: 1.295914E+00 | load_balancing_loss: 1.226554E+00 | loss scale: 1.0 | grad norm: 6.439 | num zeros: 0 | number of skipped iterations:   0 | number of nan iterations:   0 |
+ [2025-08-27 00:08:27] iteration       66/    5439 | consumed samples:         8448 | elapsed time per iteration (ms): 5372.6 | throughput per GPU (TFLOP/s/GPU): 1492.5 | learning rate: 1.213235E-06 | global batch size:   128 | lm loss: 1.271168E+00 | load_balancing_loss: 1.222525E+00 | loss scale: 1.0 | grad norm: 6.518 | num zeros: 0 | number of skipped iterations:   0 | number of nan iterations:   0 |
+ [2025-08-27 00:08:31] iteration       67/    5439 | consumed samples:         8576 | elapsed time per iteration (ms): 4775.9 | throughput per GPU (TFLOP/s/GPU): 1679.0 | learning rate: 1.231618E-06 | global batch size:   128 | lm loss: 1.086526E+00 | load_balancing_loss: 1.226285E+00 | loss scale: 1.0 | grad norm: 6.193 | num zeros: 0 | number of skipped iterations:   0 | number of nan iterations:   0 |
+ [2025-08-27 00:08:36] iteration       68/    5439 | consumed samples:         8704 | elapsed time per iteration (ms): 4678.9 | throughput per GPU (TFLOP/s/GPU): 1713.8 | learning rate: 1.250000E-06 | global batch size:   128 | lm loss: 1.124513E+00 | load_balancing_loss: 1.230691E+00 | loss scale: 1.0 | grad norm: 6.707 | num zeros: 0 | number of skipped iterations:   0 | number of nan iterations:   0 |
+ [2025-08-27 00:08:41] iteration       69/    5439 | consumed samples:         8832 | elapsed time per iteration (ms): 4721.6 | throughput per GPU (TFLOP/s/GPU): 1698.3 | learning rate: 1.268382E-06 | global batch size:   128 | lm loss: 1.177456E+00 | load_balancing_loss: 1.221962E+00 | loss scale: 1.0 | grad norm: 6.202 | num zeros: 0 | number of skipped iterations:   0 | number of nan iterations:   0 |
+ [2025-08-27 00:08:46] iteration       70/    5439 | consumed samples:         8960 | elapsed time per iteration (ms): 4745.0 | throughput per GPU (TFLOP/s/GPU): 1690.0 | learning rate: 1.286765E-06 | global batch size:   128 | lm loss: 1.056656E+00 | load_balancing_loss: 1.219215E+00 | loss scale: 1.0 | grad norm: 6.812 | num zeros: 0 | number of skipped iterations:   0 | number of nan iterations:   0 |
+[rank2]: Traceback (most recent call last):
+[rank2]:   File "/home/ma-user/work/wza/Pai-Megatron-Patch/examples/qwen2_vl/pretrain_qwen.py", line 577, in <module>
+[rank2]:     pretrain(
+[rank2]:   File "/home/ma-user/work/wza/Pai-Megatron-Patch/backends/megatron/Megatron-LM-250217/megatron/training/training.py", line 412, in pretrain
+[rank2]:     iteration, num_floating_point_operations_so_far = train(
+[rank2]:                                                       ^^^^^^
+[rank2]:   File "/home/ma-user/work/wza/Pai-Megatron-Patch/backends/megatron/Megatron-LM-250217/megatron/training/training.py", line 1541, in train
+[rank2]:     train_step(forward_step_func,
+[rank2]:   File "/home/ma-user/work/wza/Pai-Megatron-Patch/backends/megatron/Megatron-LM-250217/megatron/training/training.py", line 815, in train_step
+[rank2]:     losses_reduced = forward_backward_func(
+[rank2]:                      ^^^^^^^^^^^^^^^^^^^^^^
+[rank2]:   File "/home/ma-user/work/wza/Pai-Megatron-Patch/backends/megatron/Megatron-LM-250217/megatron/core/pipeline_parallel/schedules.py", line 467, in forward_backward_no_pipelining
+[rank2]:     backward_step(input_tensor, output_tensor, output_tensor_grad, model_type, config)
+[rank2]:   File "/home/ma-user/work/wza/Pai-Megatron-Patch/backends/megatron/Megatron-LM-250217/megatron/core/pipeline_parallel/schedules.py", line 366, in backward_step
+[rank2]:     custom_backward(output_tensor[0], output_tensor_grad[0])
+[rank2]:   File "/home/ma-user/work/wza/Pai-Megatron-Patch/backends/megatron/Megatron-LM-250217/megatron/core/pipeline_parallel/schedules.py", line 150, in custom_backward
+[rank2]:     Variable._execution_engine.run_backward(
+[rank2]:   File "/home/ma-user/anaconda3/envs/megatron/lib/python3.12/site-packages/torch/utils/data/_utils/signal_handling.py", line 73, in handler
+[rank2]:     _error_if_any_worker_fails()
+[rank2]: RuntimeError: DataLoader worker (pid 3724358) is killed by signal: Killed. 
+[rank2]:[W827 00:09:26.210324586 ProcessGroupNCCL.cpp:1250] Warning: WARNING: process group has NOT been destroyed before we destruct ProcessGroupNCCL. On normal program exit, the application should call destroy_process_group to ensure that any pending NCCL operations have finished in this process. In rare cases this process can exit before this point and block the progress of another member of the process group. This constraint has always been present,  but this warning has only been added since PyTorch 2.4 (function operator())
+W0827 00:09:30.152000 3712876 /home/ma-user/work/anaconda3/envs/megatron/lib/python3.12/site-packages/torch/distributed/elastic/multiprocessing/api.py:897] Sending process 3713161 closing signal SIGTERM
+W0827 00:09:30.162000 3712876 /home/ma-user/work/anaconda3/envs/megatron/lib/python3.12/site-packages/torch/distributed/elastic/multiprocessing/api.py:897] Sending process 3713162 closing signal SIGTERM
+W0827 00:09:30.166000 3712876 /home/ma-user/work/anaconda3/envs/megatron/lib/python3.12/site-packages/torch/distributed/elastic/multiprocessing/api.py:897] Sending process 3713164 closing signal SIGTERM
+W0827 00:09:30.168000 3712876 /home/ma-user/work/anaconda3/envs/megatron/lib/python3.12/site-packages/torch/distributed/elastic/multiprocessing/api.py:897] Sending process 3713165 closing signal SIGTERM
+W0827 00:09:30.171000 3712876 /home/ma-user/work/anaconda3/envs/megatron/lib/python3.12/site-packages/torch/distributed/elastic/multiprocessing/api.py:897] Sending process 3713168 closing signal SIGTERM
+W0827 00:09:30.174000 3712876 /home/ma-user/work/anaconda3/envs/megatron/lib/python3.12/site-packages/torch/distributed/elastic/multiprocessing/api.py:897] Sending process 3713169 closing signal SIGTERM
+W0827 00:09:30.175000 3712876 /home/ma-user/work/anaconda3/envs/megatron/lib/python3.12/site-packages/torch/distributed/elastic/multiprocessing/api.py:897] Sending process 3713170 closing signal SIGTERM
+E0827 00:09:34.071000 3712876 /home/ma-user/work/anaconda3/envs/megatron/lib/python3.12/site-packages/torch/distributed/elastic/multiprocessing/api.py:869] failed (exitcode: 1) local_rank: 2 (pid: 3713163) of binary: /home/ma-user/anaconda3/envs/megatron/bin/python3.1
+Traceback (most recent call last):
+  File "/home/ma-user/anaconda3/envs/megatron/bin/torchrun", line 7, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/home/ma-user/anaconda3/envs/megatron/lib/python3.12/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 355, in wrapper
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "/home/ma-user/anaconda3/envs/megatron/lib/python3.12/site-packages/torch/distributed/run.py", line 919, in main
+    run(args)
+  File "/home/ma-user/anaconda3/envs/megatron/lib/python3.12/site-packages/torch/distributed/run.py", line 910, in run
+    elastic_launch(
+  File "/home/ma-user/anaconda3/envs/megatron/lib/python3.12/site-packages/torch/distributed/launcher/api.py", line 138, in __call__
+    return launch_agent(self._config, self._entrypoint, list(args))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ma-user/anaconda3/envs/megatron/lib/python3.12/site-packages/torch/distributed/launcher/api.py", line 269, in launch_agent
+    raise ChildFailedError(
+torch.distributed.elastic.multiprocessing.errors.ChildFailedError: 
+============================================================
+pretrain_qwen.py FAILED
+------------------------------------------------------------
+Failures:
+  <NO_OTHER_FAILURES>
+------------------------------------------------------------
+Root Cause (first observed failure):
+[0]:
+  time      : 2025-08-27_00:09:30
+  host      : notebook-a94d3651-a37c-4c28-b761-043ee5adcc81.notebook-a94d3651-a37c-4c28-b761-043ee5adcc81-distributed.default.svc.cluster.local
+  rank      : 2 (local_rank: 2)
+  exitcode  : 1 (pid: 3713163)
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+============================================================

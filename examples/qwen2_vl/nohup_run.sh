@@ -1,0 +1,1 @@
+nohup sh /home/ma-user/work/wza/Pai-Megatron-Patch/examples/qwen2_vl/run_mcore_qwen.sh > log/qwen2-vl-ep8.log 2>&1 &
