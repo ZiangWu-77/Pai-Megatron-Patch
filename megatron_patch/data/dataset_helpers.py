@@ -530,6 +530,9 @@ class TaskEncoder(DefaultTaskEncoder[Union[VQASample, ChatMLSample], ImageTaskSa
         max_seq_len = self.seq_len
         if not max_seq_len:
             max_seq_len = max(len(s.text) for s in samples)
+            # ensure divided by tp size
+            if max_seq_len % 2:
+                max_seq_len += 1
 
         text_mat = np.full((len(samples), max_seq_len), self.tokenizer.pad_token_id, dtype=np.int64)
         # +1 to accommodate shift to left by one later.

@@ -26,7 +26,7 @@ fi
 
 MODEL_SIZE=2B
 SOURCE_CKPT_PATH=/home/ma-user/work/wza/Model/Qwen2-VL-2B-Instruct
-TARGET_CKPT_PATH=/home/ma-user/work/wza/Model/Qwen2-VL-2B-Instruct-80E1S16A-mcore
+TARGET_CKPT_PATH=/home/ma-user/work/wza/Model/Qwen2-VL-2B-Instruct-80E1S16A-mcore-tp2-ep8
 TP=1
 PP=1
 MG2HF=false
@@ -220,6 +220,8 @@ cmd="torchrun ${DISTRIBUTED_ARGS} hf2mcore_qwen2_vl.py \
     --moe-shared-expert-intermediate-size 8960 \
     --moe-ffn-hidden-size 560 \
     --moe-grouped-gemm \
+    --target-tensor-model-parallel-size 2 \
+    --target-pipeline-model-parallel-size 1 \
     "
 
 echo $cmd

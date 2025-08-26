@@ -54,7 +54,7 @@ PR=bf16
 ### BASE CONFIG ###
 
 ### PARALLEL / BOOL OPTION ###
-TP=1
+TP=2
 PP=1
 CP=1
 SP=true
@@ -68,7 +68,7 @@ OPTIMIZER_OFFLOAD=false
 SAVE_INTERVAL=10000
 DATASET_PATH="/home/ma-user/work/Dataset/Cambrian737k/Cambrian737k/wds-train"
 VALID_DATASET_PATH="/home/ma-user/work/Dataset/Cambrian737k/Cambrian737k/wds-train"
-PRETRAIN_CHECKPOINT_PATH="/home/ma-user/work/wza/Model/Qwen2-VL-2B-Instruct-80E1S16A-mcore"
+PRETRAIN_CHECKPOINT_PATH="/home/ma-user/work/wza/Model/Qwen2-VL-2B-Instruct-80E1S16A-mcore-tp2-ep8"
 
 TRAIN_ITERS=5439
 LR_WARMUP_ITERS=272
@@ -230,7 +230,7 @@ if [ $PRETRAIN_CHECKPOINT_PATH != none ]; then
 fi
 
 LR_DECAY_ITERS=$(( ${TRAIN_ITERS} - ${LR_WARMUP_ITERS}))
-PREFIX="finetune-mcore-qwen2-vl-${MODEL_SIZE}-lr-${LR}-minlr-${MIN_LR}-bs-${BATCH_SIZE}-gbs-${GLOBAL_BATCH_SIZE}-seqlen-${SEQ_LEN}"
+PREFIX="finetune-mcore-qwen2-vl-80E1S16A-${MODEL_SIZE}-lr-${LR}-minlr-${MIN_LR}-bs-${BATCH_SIZE}-gbs-${GLOBAL_BATCH_SIZE}-seqlen-${SEQ_LEN}"
 
 if [ ${MP_SFT_PACKING} = true ]; then
     packing_options=" \
@@ -268,6 +268,7 @@ moe_options="\
         --moe-shared-expert-intermediate-size 8960 \
         --moe-ffn-hidden-size 560 \
         --moe-grouped-gemm \
+        --expert-tensor-parallel-size 1 \
         "
 
 megatron_options="  \

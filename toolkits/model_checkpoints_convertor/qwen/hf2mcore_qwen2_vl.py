@@ -681,9 +681,70 @@ def save_mgmodel(mgmodel, args):
         elif full_model[k] is None:
             full_model.pop(k)
     
-    # only support expert parallel lonely, TODO:tp+pp+ep
+    # support expert parallel and tensor parallel, TODO:tp+etp+ep+pp
     expert_pattern = r"weight(\d+)"
-    if args.expert_model_parallel_size > 1:
+    if (args.expert_model_parallel_size > 1 
+        and args.tensor_model_parallel_size > 1
+        and args.pipeline_model_parallel_size == 1
+        ):
+        assert args.num_experts > 1, "num_experts should be given."
+        assert args.num_experts % args.expert_model_parallel_size == 0
+        num_local_experts = args.num_experts // args.expert_model_parallel_size
+        vision_state_dicts = split_vision_model(mgmodel.vision_model, args)
+        for (tp_rank, etp_rank, ep_rank, pp_rank) in generate_rank_group(
+                tensor_model_parallel_size=args.tensor_model_parallel_size,
+                expert_model_parallel_size=args.expert_model_parallel_size
+        ):
+            model_split = {}
+            checkpoint_name = get_checkpoint_name(
+                args.save, 0, True,
+                args.pipeline_model_parallel_size > 1,
+                tp_rank,
+                pp_rank,
+                args.expert_model_parallel_size > 1,
+                ep_rank
+            )
+            print(f'tensor_parallel & expert_parallel, save model to {checkpoint_name}')
+            for k, v in full_model.items():
+                if '_extra_state' in k:
+                    model_split[k] = v
+                    continue
+                elif 'vision_model' in k:
+                    assert k in vision_state_dicts[(tp_rank, 0)], f"Cannot find key {k} in vision model split!"
+                    v = vision_state_dicts[(tp_rank, 0)][k]
+                elif 'shared_experts' in k and 'gate' not in k:
+                    if 'linear_fc1' in k:
+                        viewed = v.view(-1, args.moe_shared_expert_intermediate_size, args.hidden_size)
+                        seg = args.moe_shared_expert_intermediate_size // args.tensor_model_parallel_size
+                        v = viewed[:, seg * tp_rank: seg * (tp_rank + 1), :].reshape(-1, args.hidden_size)
+                    elif 'linear_fc2' in k:
+                        seg = v.shape[1] // args.tensor_model_parallel_size
+                        v = v[:, seg * tp_rank: seg * (tp_rank + 1)]
+                elif 'experts' in k:
+                    expert_rank = int(re.findall(expert_pattern, k)[0])
+                    if expert_rank // num_local_experts != ep_rank:
+                        continue
+                    expert_local_rank = expert_rank % num_local_experts
+                    k = k.replace(f'weight{expert_rank}', f'weight{expert_local_rank}')   
+                elif 'linear_qkv.weight' in k:
+                    viewed = v.view(args.num_query_groups, -1, head_dim, args.hidden_size)
+                    viewed = viewed[group_per_split * tp_rank : group_per_split * (tp_rank + 1)]
+                    v = viewed.view(-1, args.hidden_size)
+                elif 'linear_qkv.bias' in k:
+                    viewed = v.view(args.num_query_groups, -1, head_dim)
+                    viewed = viewed[group_per_split * tp_rank: group_per_split * (tp_rank + 1)]
+                    v = viewed.view(-1)
+                elif 'linear_proj' in k:
+                    seg = v.shape[1] // args.tensor_model_parallel_size
+                    v = v[:, seg*tp_rank : seg*(tp_rank + 1)]
+                elif 'word_embeddings' in k or 'output_layer' in k:
+                    seg = v.shape[0] // args.tensor_model_parallel_size
+                    v = v[seg*tp_rank : seg*(tp_rank + 1)]
+                model_split[k] = v
+            save_state_dict(args, [model_split], checkpoint_name)
+    elif (args.expert_model_parallel_size > 1
+          and args.tensor_model_parallel_size == 1
+          and args.pipeline_model_parallel_size == 1):
         assert args.num_experts > 1, "num_experts should be given."
         assert args.num_experts % args.expert_model_parallel_size == 0
         num_local_experts = args.num_experts // args.expert_model_parallel_size
@@ -699,6 +760,7 @@ def save_mgmodel(mgmodel, args):
                 args.expert_model_parallel_size > 1,
                 ep_rank
             )
+            print(f'expert_parallel, save model to {checkpoint_name}')
             for k, v in full_model.items():
                 if 'experts' in k and 'shared_experts' not in k and '_extra_state' not in k:
                     expert_rank = int(re.findall(expert_pattern, k)[0])
