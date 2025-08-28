@@ -1,0 +1,5 @@
+{
+    "python.pythonPath": "/home/ma-user/anaconda3/envs/megatron/bin/python",
+    "python.analysis.extraPaths": ["/home/ma-user/work/wza/Pai-Megatron-Patch/backends/megatron/Megatron-LM-250217", "/home/ma-user/work/wza/Pai-Megatron-Patch/examples"],
+    "python.analysis.include": ["/home/ma-user/work/wza/Pai-Megatron-Patch/megatron_patch", "/home/ma-user/work/wza/Pai-Megatron-Patch/megatron_patch"]
+}
