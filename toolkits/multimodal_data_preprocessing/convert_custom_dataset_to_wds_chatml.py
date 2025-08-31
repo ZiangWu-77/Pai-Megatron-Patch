@@ -1,20 +1,21 @@
+import io
 import json
 import os
-import webdataset as wds
-from tqdm import tqdm
-import yaml
-from argparse import ArgumentParser
-import cv2
-from webdataset.writer import default_handlers, add_handlers
-from PIL import Image
-import numpy as np
-from typing import Any
-import io
 import pickle
+from argparse import ArgumentParser
+from typing import Any
 
+import cv2
+import numpy as np
+import webdataset as wds
+import yaml
 from megatron.energon.epathlib import EPath
 from megatron.energon.flavors import BaseWebdatasetFactory
-    
+from PIL import Image
+from tqdm import tqdm
+from webdataset.writer import add_handlers, default_handlers
+
+
 def process_image_to_jpeg_bytes(image_path: str) -> bytes | None:
     """
     Ensures an image is a 3-channel RGB JPEG and returns its bytes.
@@ -48,7 +49,7 @@ def process_image_to_jpeg_bytes(image_path: str) -> bytes | None:
             # Convert to RGB mode. This handles grayscale ('L'), RGBA ('RGBA'), etc.
             if img.mode != 'RGB':
                 img = img.convert('RGB')
-            
+
             # Save the converted image to an in-memory byte buffer as a high-quality JPEG.
             with io.BytesIO() as buffer:
                 # quality=95 is a good balance between size and quality.
@@ -61,7 +62,7 @@ def process_image_to_jpeg_bytes(image_path: str) -> bytes | None:
     except Exception as e:
         print(f"Warning: Failed to process image {image_path}. Error: {e}. Skipping.")
         return None
-    
+
 def convert(dataset_dir, json_name, sort_function=sorted, max_count=10000):
     """
     Convert a dataset to WebDataset format, ensuring all images are 3-channel JPEGs.
@@ -90,13 +91,13 @@ def convert(dataset_dir, json_name, sort_function=sorted, max_count=10000):
                 image_datas = []
                 if type(entry.get("image")) == str:
                     entry["image"] = [entry["image"]]
-                
+
                 for image_filename in entry.pop('image', []):
                     full_path = os.path.join(dataset_dir, image_filename)
                     image_bytes = process_image_to_jpeg_bytes(full_path)
                     if image_bytes:
                         image_datas.append(image_bytes)
-                
+
                 video_datas = []
                 second_per_grid_ts = []
 
@@ -117,7 +118,7 @@ def convert(dataset_dir, json_name, sort_function=sorted, max_count=10000):
                             frame_bytes = process_image_to_jpeg_bytes(frame_path)
                             if frame_bytes:
                                 frames.append(frame_bytes)
-                    
+
                     if len(frames) % 2 == 1:
                         frames = frames[:-1]
                     video_datas.append(frames)
@@ -126,9 +127,10 @@ def convert(dataset_dir, json_name, sort_function=sorted, max_count=10000):
                 if has_idx is None:
                     has_idx = 'id' in entry
                 assert has_idx == ('id' in entry), "All entries should either all contain idx or not."
-                
+
                 sample = {
-                    "__key__": entry.pop('id', str(idx)), 
+                    # "__key__": entry.pop('id', str(idx)),
+                    "__key__": str(idx),
                     "jpgs": image_datas,
                     'videos': video_datas,
                     # This line is a common point of failure if 'conversations' is missing.
@@ -143,8 +145,9 @@ def convert(dataset_dir, json_name, sort_function=sorted, max_count=10000):
                 # If any error occurs while processing an entry, print a warning and continue.
                 entry_id = entry.get('id', f"index {idx}")
                 print(f"\nWarning: Failed to process entry '{entry_id}'. Error: {e}. Skipping this entry.")
+                print(entry, image_bytes is not None)
                 continue
-    
+
     print(f"Dataset successfully converted to wds")
     return output
 
@@ -154,7 +157,7 @@ def generate_configs(path: EPath, split, shuffle_tars=True, num_workers=32):
     all_tars = [str(p.relative_to(path)) for p in sorted(all_tars)]
     split_parts_ratio = [("train", split[0]), ("val", split[1]), ("test", split[2])]
     split_parts_patterns = None
-    
+
     # NOTE: generate .info.yaml and split.yaml
     _ = BaseWebdatasetFactory.prepare_dataset(
         path,
@@ -178,7 +181,7 @@ def generate_configs(path: EPath, split, shuffle_tars=True, num_workers=32):
     }
     with open(os.path.join(path.url, '.nv-meta', 'dataset.yaml'), 'w') as f:
         yaml.safe_dump(metadata, f)
-    
+
 if __name__ == '__main__':
     argparser = ArgumentParser()
     argparser.add_argument('--dataset-root', required=True, type=str)
