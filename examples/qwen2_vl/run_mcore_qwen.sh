@@ -48,7 +48,7 @@ BATCH_SIZE=4
 GLOBAL_BATCH_SIZE=128
 LR=5e-6
 MIN_LR=0
-SEQ_LEN=4096
+SEQ_LEN=2048
 # PAD_LEN=4096
 PR=bf16
 ### BASE CONFIG ###
@@ -68,13 +68,16 @@ OPTIMIZER_OFFLOAD=false
 SAVE_INTERVAL=10000
 DATASET_PATH="/home/ma-user/work/Dataset/Cambrian737k/Cambrian737k/wds-train"
 VALID_DATASET_PATH="/home/ma-user/work/Dataset/Cambrian737k/Cambrian737k/wds-train"
+# DATASET_PATH="/home/ma-user/work/Dataset/MAmmoTH-VL-Instruct-12M/wds/"
+# VALID_DATASET_PATH="/home/ma-user/work/Dataset/MAmmoTH-VL-Instruct-12M/wds/"
 PRETRAIN_CHECKPOINT_PATH="/home/ma-user/work/wza/Model/Qwen2-VL-2B-Instruct-5E1S-mcore"
 
 TRAIN_ITERS=5439
 LR_WARMUP_ITERS=272
 ###############################
 
-OUTPUT_BASEPATH=/cache/wza/Model/output_mcore_qwen2vl_4e2a_aux0_sft
+OUTPUT_BASEPATH=/cache/wza/Model/megatron-load-state-debug
+# OUTPUT_BASEPATH=/cache/wza/Model/output_mcore_qwen2vl_6e2a_aux0.001_sft_mammoth-10m
 ### OTHERS ###
 if [ $FL = true ]; then
     export NVTE_FLASH_ATTN=1 NVTE_FUSED_ATTN=0
