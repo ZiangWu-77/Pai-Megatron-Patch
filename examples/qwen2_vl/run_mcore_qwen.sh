@@ -43,7 +43,7 @@ MP_SFT_PACKING=false
 DISTRIBUTED_ARGS="--nproc_per_node $GPUS_PER_NODE --nnodes $NNODES --node_rank $NODE_RANK --master_addr $MASTER_ADDR --master_port $MASTER_PORT"
 
 ### BASE CONFIG ###
-MODEL_SIZE="2B"
+MODEL_SIZE="7B"
 BATCH_SIZE=2
 GLOBAL_BATCH_SIZE=128
 LR=5e-6
@@ -68,13 +68,16 @@ OPTIMIZER_OFFLOAD=false
 SAVE_INTERVAL=10000
 DATASET_PATH="/home/ma-user/work/Dataset/Cambrian737k/Cambrian737k/wds-train"
 VALID_DATASET_PATH="/home/ma-user/work/Dataset/Cambrian737k/Cambrian737k/wds-train"
-PRETRAIN_CHECKPOINT_PATH="/home/ma-user/work/wza/Model/Qwen2-VL-2B-Instruct-80E1S16A-mcore-ep8"
+# DATASET_PATH="/home/ma-user/work/Dataset/MAmmoTH-VL-Instruct-12M/wds"
+# VALID_DATASET_PATH="/home/ma-user/work/Dataset/MAmmoTH-VL-Instruct-12M/wds"
+# PRETRAIN_CHECKPOINT_PATH="/home/ma-user/work/wza/Model/Qwen2-VL-2B-Instruct-80E1S16A-mcore-ep8"
+PRETRAIN_CHECKPOINT_PATH="/home/ma-user/work/wza/Model/Qwen2-VL-7B-Instruct-Split-8E4A-mcore"
 
 TRAIN_ITERS=5439
 LR_WARMUP_ITERS=272
 ###############################
 
-OUTPUT_BASEPATH=/cache/wza/Model/output_mcore_qwen2vl_80e1s16a_aux0.001_sft
+OUTPUT_BASEPATH=/cache/wza/Model/output_mcore_qwen2vl_7b_split_8e4a_aux0.001_sft
 ### OTHERS ###
 if [ $FL = true ]; then
     export NVTE_FLASH_ATTN=1 NVTE_FUSED_ATTN=0
@@ -260,16 +263,15 @@ find -L ${PRETRAIN_CHECKPOINT_PATH} -maxdepth 1 -type f -name "merges.txt" -prin
 
 moe_options="\
         --expert-model-parallel-size 8 \
-        --num-experts 80 \
-        --moe-router-topk 16 \
+        --num-experts 8 \
+        --moe-router-topk 4 \
         --moe-token-dispatcher-type alltoall \
         --moe-router-load-balancing-type aux_loss \
         --moe-aux-loss-coeff 0.001 \
-        --moe-shared-expert-intermediate-size 8960 \
-        --moe-ffn-hidden-size 560 \
+        --moe-ffn-hidden-size 2368 \
         --moe-grouped-gemm \
         "
-
+        # --moe-shared-expert-intermediate-size 8960 \
 megatron_options="  \
         --train-data-path ${DATASET_PATH} \
         --valid-data-path ${VALID_DATASET_PATH} \

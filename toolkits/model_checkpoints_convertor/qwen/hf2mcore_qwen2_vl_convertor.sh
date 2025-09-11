@@ -24,14 +24,14 @@ else
         --target-num-layers-per-virtual-pipeline-stage ${MP_VP}"
 fi
 
-MODEL_SIZE=2B
-SOURCE_CKPT_PATH=/home/ma-user/work/wza/Model/output_mcore_qwen2vl_80e1s16a_aux0.001_sft/checkpoint/finetune-mcore-qwen2-vl-2B-lr-5e-6-minlr-0-bs-2-gbs-128-seqlen-4096-pr-bf16-tp-1-pp-1-cp-1-ac-false-do-true-sp-true-ti-5439-wi-272
-TARGET_CKPT_PATH=/home/ma-user/work/wza/Model/Qwen2-VL-Instruct-80e1s16a_aux0.001_sft-Megatron
+MODEL_SIZE=7B
+SOURCE_CKPT_PATH=/home/ma-user/work/wza/Model/Qwen2-VL-7B-Instruct
+TARGET_CKPT_PATH=/home/ma-user/work/wza/Model/Qwen2-VL-7B-Instruct-Split-8E4A-mcore
 TP=1
 PP=1
-MG2HF=true
+MG2HF=false
 PR=bf16
-HF_CKPT_PATH=/home/ma-user/work/wza/Model/Qwen2-VL-2B-Instruct-Split-80E1S16A
+# HF_CKPT_PATH=/home/ma-user/work/wza/Model/Qwen2-VL-7B-Instruct-Split-8E4A
 
 CURRENT_DIR="$( cd "$( dirname "$0" )" && pwd )"
 MEGATRON_PATCH_PATH=$( dirname $(dirname $( dirname ${CURRENT_DIR})))
@@ -66,7 +66,7 @@ NUM_ATTN_HEADS=28
 INTERMEDIATE_SIZE=18944
 NUM_KEY_VALUE_HEADS=4
 MAX_POSITION_EMBEDDINGS=131072
-EXTRA_VOCAB_SIZE=293  # 151643 + 421 = 152064
+EXTRA_VOCAB_SIZE=421  # 151643 + 421 = 152064
 RMS_NORM_EPS=1e-6
 
 gqa_options=" \
@@ -151,7 +151,7 @@ else
     exit -1
 fi
 
-ROUTER_TOPK=2
+ROUTER_TOPK=4
 NUM_EXPERTS=8
 ETP=1
 EP=8
@@ -215,13 +215,12 @@ cmd="torchrun ${DISTRIBUTED_ARGS} hf2mcore_qwen2_vl.py \
     ${gqa_options} \
     ${uneven_split_option} \
     ${vp_options} \
-    --num-experts 80 \
+    --num-experts 8 \
     --target-expert-model-parallel-size 8 \
-    --moe-shared-expert-intermediate-size 8960 \
-    --moe-ffn-hidden-size 560 \
+    --moe-ffn-hidden-size 2368 \
     --moe-grouped-gemm \
     "
-
+    # --moe-shared-expert-intermediate-size 2368 \
 echo $cmd
 eval $cmd
 

@@ -467,24 +467,25 @@ def convert_checkpoint_from_transformers_to_megatron(hfmodel, mgmodel, args):
         # copied_numel += safe_copy(hflayer.mlp.down_proj.weight, mglayer.mlp.linear_fc2.weight)
         # copied_numel += safe_copy(hflayer.post_attention_layernorm.weight, mglayer.mlp.linear_fc1.layer_norm_weight)
         # moe weight copy
-        mglayer.mlp.router.weight.data[:16].normal_(mean=0.0, std=0.02)
-        mglayer.mlp.router.weight.data[16:].normal_(mean=0.0, std=0.0001)
+        # mglayer.mlp.router.weight.data[:16].normal_(mean=0.0, std=0.02)
+        # mglayer.mlp.router.weight.data[16:].normal_(mean=0.0, std=0.0001)
+        mglayer.mlp.router.weight.data.normal_(mean=0.0, std=0.02)
         # mglayer.mlp.router.weight.data[16:,...].zero_()
         # copied_numel += mglayer.mlp.router.weight.numel()
-        chunked_gate_proj_weight = torch.chunk(hflayer.mlp.gate_proj.weight, 16, dim=0)
-        chunked_up_proj_weight = torch.chunk(hflayer.mlp.up_proj.weight, 16, dim=0)
-        chunked_down_proj_weight = torch.chunk(hflayer.mlp.down_proj.weight, 16, dim=1)
+        chunked_gate_proj_weight = torch.chunk(hflayer.mlp.gate_proj.weight, 8, dim=0)
+        chunked_up_proj_weight = torch.chunk(hflayer.mlp.up_proj.weight, 8, dim=0)
+        chunked_down_proj_weight = torch.chunk(hflayer.mlp.down_proj.weight, 8, dim=1)
         fc1_weight = [torch.cat([gate, up]) for gate, up in zip(chunked_gate_proj_weight, chunked_up_proj_weight)]
         fc2_weight = list(chunked_down_proj_weight)
         shared_fc1_weight = torch.cat([hflayer.mlp.gate_proj.weight, hflayer.mlp.up_proj.weight])
         shared_fc2_weight = hflayer.mlp.down_proj.weight
         experts_numel = 0
-        for i in range(80):
+        for i in range(8):
             linear_fc1_weighti = getattr(mglayer.mlp.experts.linear_fc1, 'weight' + str(i))
             linear_fc2_weighti = getattr(mglayer.mlp.experts.linear_fc2, 'weight' + str(i))
-            experts_numel += safe_copy(fc1_weight[i%16], linear_fc1_weighti)
-            experts_numel += safe_copy(fc2_weight[i%16], linear_fc2_weighti)
-        copied_numel += experts_numel // 5
+            experts_numel += safe_copy(fc1_weight[i], linear_fc1_weighti)
+            experts_numel += safe_copy(fc2_weight[i], linear_fc2_weighti)
+        copied_numel += experts_numel
         if args.moe_shared_expert_intermediate_size is not None:
             mglayer.mlp.shared_experts.linear_fc1.weight.copy_(shared_fc1_weight)
             mglayer.mlp.shared_experts.linear_fc2.weight.copy_(shared_fc2_weight)
