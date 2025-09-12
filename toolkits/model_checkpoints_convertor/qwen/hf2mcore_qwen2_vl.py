@@ -467,8 +467,9 @@ def convert_checkpoint_from_transformers_to_megatron(hfmodel, mgmodel, args):
         # copied_numel += safe_copy(hflayer.mlp.down_proj.weight, mglayer.mlp.linear_fc2.weight)
         # copied_numel += safe_copy(hflayer.post_attention_layernorm.weight, mglayer.mlp.linear_fc1.layer_norm_weight)
         # moe weight copy
-        mglayer.mlp.router.weight.data[:16].normal_(mean=0.0, std=0.02)
-        mglayer.mlp.router.weight.data[16:].normal_(mean=0.0, std=0.0001)
+        # mglayer.mlp.router.weight.data[:16].normal_(mean=0.0, std=0.02)
+        # mglayer.mlp.router.weight.data[16:].normal_(mean=0.0, std=0.0001)
+        mglayer.mlp.router.weight.data.normal_(mean=0.0, std=0.02)
         # mglayer.mlp.router.weight.data[16:,...].zero_()
         # copied_numel += mglayer.mlp.router.weight.numel()
         chunked_gate_proj_weight = torch.chunk(hflayer.mlp.gate_proj.weight, 16, dim=0)
@@ -479,11 +480,13 @@ def convert_checkpoint_from_transformers_to_megatron(hfmodel, mgmodel, args):
         shared_fc1_weight = torch.cat([hflayer.mlp.gate_proj.weight, hflayer.mlp.up_proj.weight])
         shared_fc2_weight = hflayer.mlp.down_proj.weight
         experts_numel = 0
-        for i in range(80):
-            linear_fc1_weighti = getattr(mglayer.mlp.experts.linear_fc1, 'weight' + str(i))
-            linear_fc2_weighti = getattr(mglayer.mlp.experts.linear_fc2, 'weight' + str(i))
-            experts_numel += safe_copy(fc1_weight[i%16], linear_fc1_weighti)
-            experts_numel += safe_copy(fc2_weight[i%16], linear_fc2_weighti)
+        for i in range(16):
+            for j in range(5):
+                linear_fc1_weighti = getattr(mglayer.mlp.experts.linear_fc1, 'weight' + str(5*i+j))
+                linear_fc2_weighti = getattr(mglayer.mlp.experts.linear_fc2, 'weight' + str(5*i+j))
+                experts_numel += safe_copy(fc1_weight[i], linear_fc1_weighti)
+                experts_numel += safe_copy(fc2_weight[i], linear_fc2_weighti)
+
         copied_numel += experts_numel // 5
         if args.moe_shared_expert_intermediate_size is not None:
             mglayer.mlp.shared_experts.linear_fc1.weight.copy_(shared_fc1_weight)
