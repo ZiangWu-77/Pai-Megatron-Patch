@@ -74,7 +74,7 @@ TRAIN_ITERS=5439
 LR_WARMUP_ITERS=272
 ###############################
 
-OUTPUT_BASEPATH=/cache/wza/Model/output_mcore_qwen2vl_80e1s16a_aux0.001_sft
+OUTPUT_BASEPATH=/home/ma-user/work/wza/Model/output_mcore_qwen2vl_80e1s16a_aux0.001_sft_ensureloss
 ### OTHERS ###
 if [ $FL = true ]; then
     export NVTE_FLASH_ATTN=1 NVTE_FUSED_ATTN=0
