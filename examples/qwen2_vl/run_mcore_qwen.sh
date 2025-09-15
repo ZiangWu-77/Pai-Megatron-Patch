@@ -44,11 +44,11 @@ DISTRIBUTED_ARGS="--nproc_per_node $GPUS_PER_NODE --nnodes $NNODES --node_rank $
 
 ### BASE CONFIG ###
 MODEL_SIZE="7B"
-BATCH_SIZE=1
+BATCH_SIZE=2
 GLOBAL_BATCH_SIZE=128
 LR=5e-6
 MIN_LR=0
-SEQ_LEN=8192
+SEQ_LEN=4096
 # PAD_LEN=4096
 PR=bf16
 ### BASE CONFIG ###
@@ -66,18 +66,20 @@ FL=true
 AC=false
 OPTIMIZER_OFFLOAD=false
 SAVE_INTERVAL=10000
-# DATASET_PATH="/home/ma-user/work/Dataset/Cambrian737k/Cambrian737k/wds-train"
-# VALID_DATASET_PATH="/home/ma-user/work/Dataset/Cambrian737k/Cambrian737k/wds-train"
-DATASET_PATH="/home/ma-user/work/Dataset/MAmmoTH-VL-Instruct-12M/wds"
-VALID_DATASET_PATH="/home/ma-user/work/Dataset/MAmmoTH-VL-Instruct-12M/wds"
+DATASET_PATH="/home/ma-user/work/Dataset/Cambrian737k/Cambrian737k/wds-train"
+VALID_DATASET_PATH="/home/ma-user/work/Dataset/Cambrian737k/Cambrian737k/wds-train"
+# DATASET_PATH="/home/ma-user/work/Dataset/MAmmoTH-VL-Instruct-12M/wds"
+# VALID_DATASET_PATH="/home/ma-user/work/Dataset/MAmmoTH-VL-Instruct-12M/wds"
 # PRETRAIN_CHECKPOINT_PATH="/home/ma-user/work/wza/Model/Qwen2-VL-2B-Instruct-80E1S16A-mcore-ep8"
 PRETRAIN_CHECKPOINT_PATH="/home/ma-user/work/wza/Model/Qwen2-VL-7B-Instruct-Split-8E4A-mcore"
 
-TRAIN_ITERS=72029
-LR_WARMUP_ITERS=2000
+TRAIN_ITERS=5439
+LR_WARMUP_ITERS=272
+# TRAIN_ITERS=72029
+# LR_WARMUP_ITERS=2000
 ###############################
 
-OUTPUT_BASEPATH=/cache/wza/Model/output_mcore_qwen2vl_7b_split_8e4a_aux0.001_sft
+OUTPUT_BASEPATH=/cache/wza/Model/output_mcore_qwen2vl_7b_split_8e4a_aux0.001_sft_cambrian737k_ensureloss
 ### OTHERS ###
 if [ $FL = true ]; then
     export NVTE_FLASH_ATTN=1 NVTE_FUSED_ATTN=0
