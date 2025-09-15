@@ -470,7 +470,7 @@ def convert_checkpoint_from_transformers_to_megatron(hfmodel, mgmodel, args):
         # mglayer.mlp.router.weight.data[:16].normal_(mean=0.0, std=0.02)
         # mglayer.mlp.router.weight.data[16:].normal_(mean=0.0, std=0.0001)
         # mglayer.mlp.router.weight.data.normal_(mean=0.0, std=0.02)
-        mglayer.mlp.router.weight.data.fill_(1.0)
+        mglayer.mlp.router.weight.data.fill_(0.0)
         # mglayer.mlp.router.weight.data[16:,...].zero_()
         # copied_numel += mglayer.mlp.router.weight.numel()
         chunked_gate_proj_weight = torch.chunk(hflayer.mlp.gate_proj.weight, 8, dim=0)
