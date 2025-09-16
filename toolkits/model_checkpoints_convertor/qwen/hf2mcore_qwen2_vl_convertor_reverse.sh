@@ -26,13 +26,13 @@ else
 fi
 
 MODEL_SIZE=7B
-SOURCE_CKPT_PATH=/home/ma-user/work/wza/Model/Qwen2-VL-7B-Instruct
-TARGET_CKPT_PATH=/home/ma-user/work/wza/Model/Qwen2-VL-7B-Instruct-Split-8E4A-mcore
+SOURCE_CKPT_PATH=/home/ma-user/work/wza/Model/output_mcore_qwen2vl_7b_split_8e4a_aux0.001_sft_cambrian737k_ensureloss/checkpoint/finetune-mcore-qwen2-vl-7B-lr-5e-6-minlr-0-bs-2-gbs-128-seqlen-4096-pr-bf16-tp-1-pp-1-cp-1-ac-false-do-true-sp-true-ti-5439-wi-272
+TARGET_CKPT_PATH=/home/ma-user/work/wza/Model/Qwen2-VL-7B-Instruct-Split-8E4A-mcore-Cambrian737K-megatron-ensureloss-exactly
 TP=1
 PP=1
-MG2HF=false
+MG2HF=true
 PR=bf16
-# HF_CKPT_PATH=/home/ma-user/work/wza/Model/Qwen2-VL-7B-Instruct-Split-8E4A
+HF_CKPT_PATH=/home/ma-user/work/wza/Model/Qwen2-VL-7B-Instruct-Split-8E4A
 
 CURRENT_DIR="$( cd "$( dirname "$0" )" && pwd )"
 MEGATRON_PATCH_PATH=$( dirname $(dirname $( dirname ${CURRENT_DIR})))

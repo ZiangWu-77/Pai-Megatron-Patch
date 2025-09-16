@@ -5,6 +5,7 @@ CURRENT_DIR="$( cd "$( dirname "$0" )" && pwd )"
 MEGATRON_PATCH_PATH=$( dirname $( dirname ${CURRENT_DIR}))
 # export NVTE_DEBUG=1 
 # export NVTE_DEBUG_LEVEL=2
+export LD_LIBRARY_PATH=/home/ma-user/anaconda3/envs/megatron/lib/python3.12/site-packages/nvidia/cudnn/lib:$LD_LIBRARY_PATH
 export PYTHONPATH=${MEGATRON_PATCH_PATH}:${MEGATRON_PATCH_PATH}/backends/megatron/Megatron-LM-250217:$PYTHONPATH
 export CUDA_DEVICE_MAX_CONNECTIONS=1
 export NVTE_APPLY_QK_LAYER_SCALING=0
@@ -79,7 +80,7 @@ LR_WARMUP_ITERS=272
 # LR_WARMUP_ITERS=2000
 ###############################
 
-OUTPUT_BASEPATH=/cache/wza/Model/output_mcore_qwen2vl_7b_split_8e4a_aux0.001_sft_cambrian737k_ensureloss
+OUTPUT_BASEPATH=/home/ma-user/work/wza/Model/output_mcore_qwen2vl_7b_split_8e4a_aux0.001_sft_cambrian737k_ensureloss
 ### OTHERS ###
 if [ $FL = true ]; then
     export NVTE_FLASH_ATTN=1 NVTE_FUSED_ATTN=0
