@@ -1,4 +1,5 @@
 #!/bin/bash
+export LD_LIBRARY_PATH=/home/ma-user/anaconda3/envs/megatron/lib/python3.12/site-packages/nvidia/cudnn/lib:$LD_LIBRARY_PATH
 set -e
 export CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES:-7}
 export TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD=true # for PyTorch >= 2.6

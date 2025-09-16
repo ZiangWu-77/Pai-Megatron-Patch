@@ -1,4 +1,5 @@
 #!/bin/bash
+export LD_LIBRARY_PATH=/home/ma-user/anaconda3/envs/megatron/lib/python3.12/site-packages/nvidia/cudnn/lib:$LD_LIBRARY_PATH
 set -e
 export CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES:-7}
 export TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD=true # for PyTorch >= 2.6
@@ -25,8 +26,8 @@ else
 fi
 
 MODEL_SIZE=2B
-SOURCE_CKPT_PATH=/home/ma-user/work/wza/Model/output_mcore_qwen2vl_80e1s16a_aux0.001_sft_ensureloss/checkpoint/finetune-mcore-qwen2-vl-2B-lr-5e-6-minlr-0-bs-2-gbs-128-seqlen-4096-pr-bf16-tp-1-pp-1-cp-1-ac-false-do-true-sp-true-ti-5439-wi-272
-TARGET_CKPT_PATH=/home/ma-user/work/wza/Model/Qwen2-VL-2B-Instruct-80E1S16A-megatron-ensureloss
+SOURCE_CKPT_PATH=/home/ma-user/work/wza/Model/output_mcore_qwen2vl_80e1s16a_aux0.001_sft_ensureloss_exactly/checkpoint/finetune-mcore-qwen2-vl-2B-lr-5e-6-minlr-0-bs-2-gbs-128-seqlen-4096-pr-bf16-tp-1-pp-1-cp-1-ac-false-do-true-sp-true-ti-5439-wi-272
+TARGET_CKPT_PATH=/home/ma-user/work/wza/Model/Qwen2-VL-2B-Instruct-80E1S16A-megatron-ensureloss-exactly
 TP=1
 PP=1
 MG2HF=true
