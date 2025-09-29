@@ -115,11 +115,16 @@ def process_entry(args_tuple) -> Optional[Dict[str, Any]]:
                 video_datas.append(frames)
                 second_per_grid_ts.append(1 / fps)
 
+        # teacher logits preparation
+        with open(entry['logits_path'], "rb") as f:
+            teacher_logits_bytes = f.read()
         # Assemble the sample dictionary
         sample = {
-            "__key__": str(idx),
+            "__key__": str(entry.pop('id', str(idx))),
+            # "__key__": str(idx),
             "jpgs": image_datas,
             'videos': video_datas,
+            "teacher_logits.pth": teacher_logits_bytes,
             "json": json.dumps({
                 'conversations': entry['conversations'],
                 'second_per_grid_ts': second_per_grid_ts
@@ -139,7 +144,7 @@ def convert(dataset_dir, json_name, sort_function=sorted, max_count=10000, num_w
     Convert a dataset to WebDataset format in parallel, ensuring all images are 3-channel JPEGs.
     """
     json_file = os.path.join(dataset_dir, json_name)
-    output = os.path.join(dataset_dir, 'wds')
+    output = os.path.join(dataset_dir, 'wds-distill')
 
     if not os.path.exists(output):
         os.mkdir(output)
@@ -196,7 +201,9 @@ def generate_configs(path: EPath, split, shuffle_tars=True, num_workers=32):
         'field_map': {
             'imgs': 'jpgs',
             'videos': 'videos',
-            'conversation': 'json'
+            'conversation': 'json',
+            'id': '__key__',
+            'teacher_logits': 'teacher_logits.pth'
         }
     }
     with open(os.path.join(path.url, '.nv-meta', 'dataset.yaml'), 'w') as f:

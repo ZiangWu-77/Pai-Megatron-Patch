@@ -69,8 +69,10 @@ OPTIMIZER_OFFLOAD=false
 SAVE_INTERVAL=10000
 # DATASET_PATH="/home/ma-user/work/Dataset/Cambrian737k/Cambrian737k/wds-train"
 # VALID_DATASET_PATH="/home/ma-user/work/Dataset/Cambrian737k/Cambrian737k/wds-train"
-DATASET_PATH="/home/ma-user/work/Dataset/MAmmoTH-VL-Instruct-12M/wds"
-VALID_DATASET_PATH="/home/ma-user/work/Dataset/MAmmoTH-VL-Instruct-12M/wds"
+# DATASET_PATH="/home/ma-user/work/Dataset/MAmmoTH-VL-Instruct-12M/wds"
+# VALID_DATASET_PATH="/home/ma-user/work/Dataset/MAmmoTH-VL-Instruct-12M/wds"
+DATASET_PATH="/home/ma-user/work/Dataset/Cambrian737k/Cambrian737k/wds-distill"
+VALID_DATASET_PATH="/home/ma-user/work/Dataset/Cambrian737k/Cambrian737k/wds-distill"
 # PRETRAIN_CHECKPOINT_PATH="/home/ma-user/work/wza/Model/Qwen2-VL-2B-Instruct-80E1S16A-mcore-ep8"
 PRETRAIN_CHECKPOINT_PATH="/home/ma-user/work/wza/Model/Qwen2-VL-7B-Instruct-Split-8E4A-mcore"
 
@@ -80,7 +82,7 @@ TRAIN_ITERS=72029
 LR_WARMUP_ITERS=3601
 ###############################
 
-OUTPUT_BASEPATH=/home/ma-user/work/wza/Model/output_mcore_qwen2vl_7b_split_8e4a_aux0.001_sft_mammoth-10m_ensureloss
+OUTPUT_BASEPATH=/home/ma-user/work/wza/Model/output_mcore_qwen2vl_7b_split_8e4a_aux0.001_distill_sft_cambrian-737k_ensureloss
 ### OTHERS ###
 if [ $FL = true ]; then
     export NVTE_FLASH_ATTN=1 NVTE_FUSED_ATTN=0

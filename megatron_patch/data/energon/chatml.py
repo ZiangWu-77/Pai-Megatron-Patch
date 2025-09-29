@@ -18,6 +18,8 @@ class ChatMLSample(Sample):
     imgs: List[torch.Tensor]
     videos: List[List[torch.Tensor]]
     conversation: str # JSON string of GPT-format conversations
+    id: str
+    teacher_logits: torch.Tensor
 
 class NestedImagesHandler:
     def __init__(self, imagespec):
@@ -60,5 +62,6 @@ class ChatMLWebdataset(DefaultDecoderWebdatasetFactory[ChatMLSample]):
                     imagehandler(self.image_decode),
                     NestedImagesHandler(self.image_decode),
                     self._video_decoder,
+                    pth=wds.torch_loads
                 ]
             )

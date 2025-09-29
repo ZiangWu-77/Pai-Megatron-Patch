@@ -129,8 +129,8 @@ def convert(dataset_dir, json_name, sort_function=sorted, max_count=10000):
                 assert has_idx == ('id' in entry), "All entries should either all contain idx or not."
 
                 sample = {
-                    # "__key__": entry.pop('id', str(idx)),
-                    "__key__": str(idx),
+                    "__key__": entry.pop('id', str(idx)),
+                    # "__key__": str(idx),
                     "jpgs": image_datas,
                     'videos': video_datas,
                     # This line is a common point of failure if 'conversations' is missing.
