@@ -1,5 +1,6 @@
 #!/bin/bash
 set -e
+export LD_LIBRARY_PATH=/home/ma-user/anaconda3/envs/megatron/lib/python3.12/site-packages/nvidia/cudnn/lib:$LD_LIBRARY_PATH
 export CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES:-7}
 export TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD=true # for PyTorch >= 2.6
 START_TIME=$SECONDS
@@ -24,10 +25,10 @@ else
         --target-num-layers-per-virtual-pipeline-stage ${MP_VP}"
 fi
 
-MODEL_SIZE=2B
-SOURCE_CKPT_PATH=/home/ma-user/work/wza/Model/Qwen2-VL-2B-Instruct
-TARGET_CKPT_PATH=/home/ma-user/work/wza/Model/Qwen2-VL-2B-Instruct-5E1S-mcore
-TP=1
+MODEL_SIZE=7B
+SOURCE_CKPT_PATH=/home/ma-user/work/wza/Model/Qwen2-VL-7B-Instruct
+TARGET_CKPT_PATH=/home/ma-user/work/wza/Model/Qwen2-VL-7B-Instruct-mcore-tp-2
+TP=2
 PP=1
 MG2HF=false
 PR=bf16
@@ -66,7 +67,7 @@ NUM_ATTN_HEADS=28
 INTERMEDIATE_SIZE=18944
 NUM_KEY_VALUE_HEADS=4
 MAX_POSITION_EMBEDDINGS=131072
-EXTRA_VOCAB_SIZE=293  # 151643 + 421 = 152064
+EXTRA_VOCAB_SIZE=421  # 151643 + 421 = 152064
 RMS_NORM_EPS=1e-6
 
 gqa_options=" \
@@ -214,10 +215,10 @@ cmd="torchrun ${DISTRIBUTED_ARGS} hf2mcore_qwen2_vl.py \
     ${tie_option} \
     ${gqa_options} \
     ${uneven_split_option} \
-    ${vp_options} \
-    --num-experts 4 \
-    --target-expert-model-parallel-size 4 \
-    --moe-shared-expert-intermediate-size 8960"
+    ${vp_options}"
+    # --num-experts 4 \
+    # --target-expert-model-parallel-size 4 \
+    # --moe-shared-expert-intermediate-size 8960
 
 echo $cmd
 eval $cmd

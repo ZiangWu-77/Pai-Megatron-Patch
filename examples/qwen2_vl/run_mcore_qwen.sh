@@ -1,4 +1,7 @@
 #!/bin/bash
+# export CUDA_VISIBLE_DEVICES=4,5,6,7
+export NCCL_DEBUG=INFO
+export LD_LIBRARY_PATH=/home/ma-user/anaconda3/envs/megatron/lib/python3.12/site-packages/nvidia/cudnn/lib:$LD_LIBRARY_PATH
 set -e
 ENV="dsw"
 CURRENT_DIR="$( cd "$( dirname "$0" )" && pwd )"
@@ -14,6 +17,43 @@ export NVTE_FUSED_ATTN=1
 export TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD=true # for PyTorch >= 2.6
 export UB_SKIPMC=1 # cancel CUDA multicast
 # export CUDA_VISIBLE_DEVICES=1
+
+rm -rvf /home/ma-user/anaconda3
+ln -s ~/work/anaconda3 ~/
+__conda_setup="$('/home/ma-user/anaconda3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    echo "Conda hook initialized via eval."
+    eval "$__conda_setup"
+else
+    if [ -f "/home/ma-user/anaconda3/etc/profile.d/conda.sh" ]; then
+        echo "Conda hook initialized via profile.d."
+        . "/home/ma-user/anaconda3/etc/profile.d/conda.sh"
+    else
+        echo "Conda hook failed, falling back to PATH export."
+        export PATH="/home/ma-user/anaconda3/bin:$PATH"
+    fi
+fi
+unset __conda_setup
+
+# --- List environments (Good for logging) ---
+echo "--- Available Conda Environments ---"
+conda env list
+echo "------------------------------------"
+
+# --- Activate Environment ---
+echo "Activating environment: megatron"
+conda activate megatron
+
+# --- VERIFICATION (Use Method 1 or 2) ---
+echo "Verifying activation..."
+if [ "$CONDA_DEFAULT_ENV" = "megatron" ]; then
+    echo "✅ Success: Environment '$CONDA_DEFAULT_ENV' is active."
+    echo "Python path: $(which python)"
+else
+    echo "❌ Error: Environment activation failed! CONDA_DEFAULT_ENV is '$CONDA_DEFAULT_ENV'"
+    exit 1 # Stop the script
+fi
+echo "------------------------------------"
 
 if [ -z ${MP_AC_LAYERS} ];then
     MP_AC_LAYERS=1
@@ -40,24 +80,30 @@ fi
 
 MP_SFT_PACKING=false
 # GPUS_PER_NODE=1
+MASTER_ADDR=$(echo ${VC_WORKER_HOSTS} | cut -d "," -f 1)
+MASTER_PORT="6060"
+NNODES="$VC_WORKER_NUM"
+NODE_RANK="$VC_TASK_INDEX"
+GPUS_PER_NODE="$MA_NUM_GPUS"
+
 DISTRIBUTED_ARGS="--nproc_per_node $GPUS_PER_NODE --nnodes $NNODES --node_rank $NODE_RANK --master_addr $MASTER_ADDR --master_port $MASTER_PORT"
 
 ### BASE CONFIG ###
-MODEL_SIZE="2B"
-BATCH_SIZE=4
+MODEL_SIZE="7B"
+BATCH_SIZE=1
 GLOBAL_BATCH_SIZE=128
 LR=5e-6
 MIN_LR=0
-SEQ_LEN=2048
+SEQ_LEN=8192
 # PAD_LEN=4096
 PR=bf16
 ### BASE CONFIG ###
 
 ### PARALLEL / BOOL OPTION ###
-TP=1
+TP=2
 PP=1
 CP=1
-SP=true
+SP=false
 DO=true
 FL=true
 ### PARALLEL / BOOL OPTION ###
@@ -66,17 +112,19 @@ FL=true
 AC=false
 OPTIMIZER_OFFLOAD=false
 SAVE_INTERVAL=10000
-DATASET_PATH="/home/ma-user/work/Dataset/Cambrian737k/Cambrian737k/wds-train"
-VALID_DATASET_PATH="/home/ma-user/work/Dataset/Cambrian737k/Cambrian737k/wds-train"
-# DATASET_PATH="/home/ma-user/work/Dataset/MAmmoTH-VL-Instruct-12M/wds/"
-# VALID_DATASET_PATH="/home/ma-user/work/Dataset/MAmmoTH-VL-Instruct-12M/wds/"
-PRETRAIN_CHECKPOINT_PATH="/home/ma-user/work/wza/Model/Qwen2-VL-2B-Instruct-5E1S-mcore"
+# DATASET_PATH="/home/ma-user/work/Dataset/Cambrian737k/Cambrian737k/wds-train"
+# VALID_DATASET_PATH="/home/ma-user/work/Dataset/Cambrian737k/Cambrian737k/wds-train"
+DATASET_PATH="/home/ma-user/work/Dataset/MAmmoTH-VL-Instruct-12M/wds/"
+VALID_DATASET_PATH="/home/ma-user/work/Dataset/MAmmoTH-VL-Instruct-12M/wds/"
+PRETRAIN_CHECKPOINT_PATH="/home/ma-user/work/wza/Model/Qwen2-VL-7B-Instruct-mcore-tp-2"
 
-TRAIN_ITERS=5439
-LR_WARMUP_ITERS=272
+# TRAIN_ITERS=5439
+# LR_WARMUP_ITERS=272
+TRAIN_ITERS=72029
+LR_WARMUP_ITERS=3601
 ###############################
 
-OUTPUT_BASEPATH=/cache/wza/Model/megatron-load-state-debug
+OUTPUT_BASEPATH=/cache/wza/Model/output_mcore_qwen2vl_7b_mammoth-10m_tp2
 # OUTPUT_BASEPATH=/cache/wza/Model/output_mcore_qwen2vl_6e2a_aux0.001_sft_mammoth-10m
 ### OTHERS ###
 if [ $FL = true ]; then
@@ -261,15 +309,15 @@ find -L ${PRETRAIN_CHECKPOINT_PATH} -maxdepth 1 -type f -name "merges.txt" -prin
 # weight decay 0.1 init 
 # --init-method-std 0.02 \　not allowed
 
-moe_options="\
-        --expert-model-parallel-size 4 \
-        --num-experts 4 \
-        --moe-router-topk 2 \
-        --moe-token-dispatcher-type alltoall \
-        --moe-router-load-balancing-type aux_loss \
-        --moe-aux-loss-coeff 0.001 \
-        --moe-shared-expert-intermediate-size 8960 \
-        "
+# moe_options="\
+#         --expert-model-parallel-size 4 \
+#         --num-experts 4 \
+#         --moe-router-topk 2 \
+#         --moe-token-dispatcher-type alltoall \
+#         --moe-router-load-balancing-type aux_loss \
+#         --moe-aux-loss-coeff 0.001 \
+#         --moe-shared-expert-intermediate-size 8960 \
+#         "
 megatron_options="  \
         --train-data-path ${DATASET_PATH} \
         --valid-data-path ${VALID_DATASET_PATH} \
@@ -304,9 +352,6 @@ megatron_options="  \
         --tensorboard-dir ${TENSORBOARD_DIR} \
         --log-timers-to-tensorboard \
         --log-validation-ppl-to-tensorboard \
-        --wandb-project qwen-megatron \
-        --wandb-exp-name ${NAME} \
-        --wandb-save-dir /cache/wza/Pai-Megatron-Patch/examples/qwen2_vl/swanlab \
         --tensor-model-parallel-size ${TP} \
         --pipeline-model-parallel-size ${PP} \
         --context-parallel-size ${CP} \
@@ -331,7 +376,13 @@ megatron_options="  \
         --transformer-impl transformer_engine \
         --ckpt-format torch \
         --freeze-ViT \
+        --wandb-project qwen-megatron \
+        --wandb-exp-name ${NAME} \
+        --wandb-save-dir /cache/wza/Pai-Megatron-Patch/examples/qwen2_vl/swanlab \
         "
+        # --wandb-project qwen-megatron \
+        # --wandb-exp-name ${NAME} \
+        # --wandb-save-dir /cache/wza/Pai-Megatron-Patch/examples/qwen2_vl/swanlab \
         # --no-persist-layer-norm
                 # --no-persist-layer-norm debugging fixed
         # --transformer-impl transformer_engine \
@@ -351,7 +402,7 @@ megatron_options="  \
 #  ${moe_options}
 run_cmd="torchrun $DISTRIBUTED_ARGS pretrain_qwen.py
  ${megatron_options} ${dataset_option} ${pr_options} ${load_options} ${activation_checkpoint_options} \
- ${do_options} ${gqa_options} ${sft_option} ${tie_option} ${packing_options} ${uneven_split_option} ${vp_options} ${comm_overlap_option} ${offload_option} ${moe_options}"
+ ${do_options} ${gqa_options} ${sft_option} ${tie_option} ${packing_options} ${uneven_split_option} ${vp_options} ${comm_overlap_option} ${offload_option}"
 
 echo ${run_cmd}
 eval ${run_cmd}
